@@ -30,8 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MySql.Data">
-      <HintPath>H:\Documents\SharpDevelop Projects\Bugtracker\Bugtracker\bin\Debug\MySql.Data.dll</HintPath>
+    <Reference Include="MySql.Data, Version=5.2.6.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>\\svfile\Home$\kemmler.moritz\Downloads\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -43,6 +44,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Database\Exceptions\MissingConnectionStringException.cs" />
+    <Compile Include="Database\Exceptions\CouldNotConnectException.cs" />
+    <Compile Include="Database\Exceptions\NotConnectedException.cs" />
+    <Compile Include="Database\Exceptions\QueryNotPreparedException.cs" />
+    <Compile Include="Database\Exceptions\SQLQueryFailException.cs" />
     <Compile Include="FileSystem\IniFile.cs" />
     <Compile Include="Cryptography\KeySize.cs" />
     <Compile Include="Database\MySQLDatabaseManager.cs" />

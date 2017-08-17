@@ -11,13 +11,13 @@ namespace HelperLibraryUnitTests
     [TestClass]
     public class UnitTest_IniFile
     {
-        [TestMethod]
-        public void GetMaxChars()
-        {            
-            RSAKeyManagement keyManagement = new RSAKeyManagement(KeySize.SIZE_512);                              
+        //[TestMethod]
+        //public void GetMaxChars()
+        //{            
+        //    RSAKeyManagement keyManagement = new RSAKeyManagement(KeySize.SIZE_512);                              
 
-            keyManagement.EncryptString("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");                                    
-        }
+        //    keyManagement.EncryptString("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");                                    
+        //}
     }
 }
 

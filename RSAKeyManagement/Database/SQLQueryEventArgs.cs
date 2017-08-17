@@ -9,21 +9,23 @@ namespace HelperLibrary.Database
     public class SQLQueryEventArgs : EventArgs
     {
         private string _query;
-        private QueryResult _result;
+        private QueryType _type;
 
         public string Query { get => _query; set => _query = value; }
-        public QueryResult Result { get => _result; set => _result = value; }
+        public QueryType Type { get => _type; set => _type = value; }
 
-        public SQLQueryEventArgs(string query, QueryResult result)
+        public SQLQueryEventArgs(string query, QueryType type)
         {
             Query = query;
-            Result = result;            
+            Type = type;            
         }
 
-        public enum QueryResult
+        public enum QueryType
         {            
-            Succeeded,
-            Failed
+            Select,
+            InsertUpdateDelete,
+            PreparedSelect,
+            PreparedInsertUpdateDelete
         }
     }
 }
