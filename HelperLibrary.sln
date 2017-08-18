@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelperLibraryUnitTests", "HelperLibraryUnitTests\HelperLibraryUnitTests.csproj", "{C9F76F1D-0D78-4E1C-A92C-3C344FAE363E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelperLibrary", "RSAKeyManagement\HelperLibrary.csproj", "{3922E085-3615-422B-B706-EF8ADDEAE830}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelperLibrary", "HelperLibrary\HelperLibrary.csproj", "{3922E085-3615-422B-B706-EF8ADDEAE830}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

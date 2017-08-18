@@ -7,8 +7,8 @@
     <ProjectGuid>{3922E085-3615-422B-B706-EF8ADDEAE830}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RSAKeyManagement</RootNamespace>
-    <AssemblyName>RSAKeyManagement</AssemblyName>
+    <RootNamespace>HelperLibrary</RootNamespace>
+    <AssemblyName>HelperLibrary</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

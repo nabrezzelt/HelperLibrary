@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // Allgemeine Informationen über eine Assembly werden über die folgenden
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die einer Assembly zugeordnet sind.
-[assembly: AssemblyTitle("RSAKeyManagement")]
+[assembly: AssemblyTitle("HelperLibrary")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("NSO")]
-[assembly: AssemblyProduct("RSAKeyManagement")]
-[assembly: AssemblyCopyright("Copyright © NSO 2017")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("HelperLibrary")]
+[assembly: AssemblyCopyright("Copyright © Nabrezzelt 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

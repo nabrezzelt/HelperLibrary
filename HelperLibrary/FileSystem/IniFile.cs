@@ -17,14 +17,14 @@ namespace HelperLibrary.FileSystem
         [DllImport("kernel32")]
         static extern int GetPrivateProfileString(string Section, string Key, string Default, StringBuilder RetVal, int Size, string FilePath);
 
-        public static IniFile OpenIniFile()
+        public static IniFile OpenFile()
         {            
             var path = new FileInfo(GetAssembyName() + ".ini").FullName.ToString();
 
             return new IniFile(path);
         }
 
-        public static IniFile OpenIniFile(string pathToIni)
+        public static IniFile OpenFile(string pathToIni)
         {
             var path = new FileInfo(pathToIni).FullName.ToString();
 

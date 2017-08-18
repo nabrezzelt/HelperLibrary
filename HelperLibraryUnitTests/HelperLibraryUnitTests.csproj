@@ -62,7 +62,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RSAKeyManagement\HelperLibrary.csproj">
+    <ProjectReference Include="..\HelperLibrary\HelperLibrary.csproj">
       <Project>{3922e085-3615-422b-b706-ef8addeae830}</Project>
       <Name>HelperLibrary</Name>
     </ProjectReference>

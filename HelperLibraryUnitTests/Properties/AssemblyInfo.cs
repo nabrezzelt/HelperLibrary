@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("HelperLibraryUnitTests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("NSO")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HelperLibraryUnitTests")]
-[assembly: AssemblyCopyright("Copyright © NSO 2017")]
+[assembly: AssemblyCopyright("Copyright © Nabrezzelt 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
