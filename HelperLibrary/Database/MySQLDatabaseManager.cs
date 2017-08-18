@@ -82,6 +82,7 @@ namespace HelperLibrary.Database
             try
             {
                 _connection.Open();
+                ConnectionSuccessful(this, new EventArgs());
             }
             catch (MySqlException e)
             {
