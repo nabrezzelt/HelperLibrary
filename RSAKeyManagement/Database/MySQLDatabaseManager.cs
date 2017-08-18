@@ -34,7 +34,9 @@ namespace HelperLibrary.Database
         private Dictionary<string, object> bindedParams = new Dictionary<string, object>();
 
         public delegate void OnSQLQueryExcecuted(object sender, SQLQueryEventArgs e);
+        public delegate void OnConnectionSuccessful(object sender, EventArgs e);
         public event OnSQLQueryExcecuted SQLQueryExcecuted;
+        public event OnConnectionSuccessful ConnectionSuccessful;
 
         public bool IsConnectionStringSet { get => _isConnectionStringSet; }
 
@@ -52,7 +54,16 @@ namespace HelperLibrary.Database
         /// <param name="database">Databasename</param>
         public void SetConnectionString(string host, string user, string password, string database)
         {
-            _connection.ConnectionString = "server=" + host + ";uid=" + user + ";password=" + password + ";database=" + database + ";";
+            MySqlConnectionStringBuilder connectionBuilder = new MySqlConnectionStringBuilder();
+
+            connectionBuilder.Server = host;
+            connectionBuilder.UserID = user;
+            connectionBuilder.Password = password;
+            connectionBuilder.Database = database;
+
+            connectionBuilder.IgnorePrepare = false;
+
+            _connection.ConnectionString = connectionBuilder.ToString();            
             _isConnectionStringSet = true;
         }
 
@@ -104,7 +115,7 @@ namespace HelperLibrary.Database
         /// <exception cref="QueryNotPreparedException" />
         public void BindValue(string parameterName, object value)
         {
-            if(prepareSQLCommand != null)
+            if(prepareSQLCommand != null && prepareSQLCommand.IsPrepared)
             {
                 prepareSQLCommand.Parameters.AddWithValue(parameterName, value);
 
@@ -131,7 +142,7 @@ namespace HelperLibrary.Database
         /// <exception cref="QueryNotPreparedException" />
         public MySqlDataReader ExecutePreparedSelect()
         {
-            if (prepareSQLCommand != null)
+            if (prepareSQLCommand != null && prepareSQLCommand.IsPrepared)
             {
                 try
                 {
