@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cryptography\HashManager.cs" />
     <Compile Include="Database\Exceptions\MissingConnectionStringException.cs" />
     <Compile Include="Database\Exceptions\CouldNotConnectException.cs" />
     <Compile Include="Database\Exceptions\NotConnectedException.cs" />

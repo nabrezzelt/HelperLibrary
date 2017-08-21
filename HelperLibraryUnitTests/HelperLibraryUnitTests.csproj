@@ -54,6 +54,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="UnitTest_Hashing.cs" />
     <Compile Include="UnitTest_SQLDBManager.cs" />
     <Compile Include="UnitTest_IniFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
