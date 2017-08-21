@@ -59,8 +59,6 @@ namespace HelperLibrary.Database
             connectionBuilder.Password = password;
             connectionBuilder.Database = database;
 
-            connectionBuilder.IgnorePrepare = false;
-
             _connection.ConnectionString = connectionBuilder.ToString();
             _isConnectionStringSet = true;
         }
@@ -80,7 +78,7 @@ namespace HelperLibrary.Database
             try
             {
                 _connection.Open();
-                ConnectionSuccessful(this, new EventArgs());
+                ConnectionSuccessful?.Invoke(this, new EventArgs());
             }
             catch (MySqlException e)
             {
@@ -114,7 +112,7 @@ namespace HelperLibrary.Database
         /// <exception cref="QueryNotPreparedException" />
         public void BindValue(string parameterName, object value)
         {
-            if (prepareSQLCommand != null && prepareSQLCommand.IsPrepared)
+            if (prepareSQLCommand != null)
             {
                 prepareSQLCommand.Parameters.AddWithValue(parameterName, value);
 
@@ -141,7 +139,7 @@ namespace HelperLibrary.Database
         /// <exception cref="QueryNotPreparedException" />
         public MySqlDataReader ExecutePreparedSelect()
         {
-            if (prepareSQLCommand != null && prepareSQLCommand.IsPrepared)
+            if (prepareSQLCommand != null)
             {
                 try
                 {
@@ -174,7 +172,7 @@ namespace HelperLibrary.Database
                 Connect();
             }
 
-            if (prepareSQLCommand != null && prepareSQLCommand.IsPrepared)
+            if (prepareSQLCommand != null)
             {
                 try
                 {
