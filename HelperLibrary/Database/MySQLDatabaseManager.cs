@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using HelperLibrary.Database.Exceptions;
 using MySql.Data.MySqlClient;
-using HelperLibrary.Database.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Text.RegularExpressions;
 
 namespace HelperLibrary.Database
@@ -19,12 +17,12 @@ namespace HelperLibrary.Database
             if (_instance != null)
             {
                 return _instance;
-            }                
+            }
             else
             {
                 _instance = new MySQLDatabaseManager();
                 return _instance;
-            }                
+            }
         }
         #endregion
 
@@ -63,7 +61,7 @@ namespace HelperLibrary.Database
 
             connectionBuilder.IgnorePrepare = false;
 
-            _connection.ConnectionString = connectionBuilder.ToString();            
+            _connection.ConnectionString = connectionBuilder.ToString();
             _isConnectionStringSet = true;
         }
 
@@ -74,7 +72,7 @@ namespace HelperLibrary.Database
         /// <exception cref="CouldNotConnectException" />
         public void Connect()
         {
-            if(!_isConnectionStringSet)
+            if (!_isConnectionStringSet)
             {
                 throw new MissingConnectionStringException("ConnectionString not set. Please use MySQLDatabaseManager.SetConnectionString() before .");
             }
@@ -87,14 +85,14 @@ namespace HelperLibrary.Database
             catch (MySqlException e)
             {
                 throw new CouldNotConnectException("Could not connect to Database!", e);
-            }            
+            }
         }
 
         ~MySQLDatabaseManager()
         {
             if (IsConnected())
                 _connection.Close();
-        }       
+        }
 
         /// <summary>
         /// Prepares a Query for execution.
@@ -103,7 +101,7 @@ namespace HelperLibrary.Database
         public void PrepareQuery(string query)
         {
             bindedParams = new Dictionary<string, object>();
-            prepareSQLCommand = _connection.CreateCommand();            
+            prepareSQLCommand = _connection.CreateCommand();
             prepareSQLCommand.CommandText = query;
             prepareSQLCommand.Prepare();
         }
@@ -116,7 +114,7 @@ namespace HelperLibrary.Database
         /// <exception cref="QueryNotPreparedException" />
         public void BindValue(string parameterName, object value)
         {
-            if(prepareSQLCommand != null && prepareSQLCommand.IsPrepared)
+            if (prepareSQLCommand != null && prepareSQLCommand.IsPrepared)
             {
                 prepareSQLCommand.Parameters.AddWithValue(parameterName, value);
 
@@ -132,7 +130,7 @@ namespace HelperLibrary.Database
             else
             {
                 throw new QueryNotPreparedException();
-            }                     
+            }
         }
 
         /// <summary>
@@ -148,14 +146,14 @@ namespace HelperLibrary.Database
                 try
                 {
                     MySqlDataReader reader = prepareSQLCommand.ExecuteReader();
-                    SQLQueryExcecuted(this, new SQLQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SQLQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
+                    SQLQueryExcecuted?.Invoke(this, new SQLQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SQLQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
 
                     return reader;
                 }
                 catch (Exception e)
                 {
                     throw new SQLQueryFailException("Query failed!", ReplacePlaceholderInPreparedQuery(), e);
-                }                
+                }
             }
             else
             {
@@ -169,9 +167,9 @@ namespace HelperLibrary.Database
         /// <returns>Result of the Query.</returns>
         /// <exception cref="SQLQueryFailException" />
         /// <exception cref="QueryNotPreparedException" />
-        public void ExecuteInsertUpdateDelete()
+        public void ExecutePreparedInsertUpdateDelete()
         {
-            if(!IsConnected())
+            if (!IsConnected())
             {
                 Connect();
             }
@@ -181,12 +179,12 @@ namespace HelperLibrary.Database
                 try
                 {
                     prepareSQLCommand.ExecuteNonQuery();
-                    SQLQueryExcecuted(this, new SQLQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SQLQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
+                    SQLQueryExcecuted?.Invoke(this, new SQLQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SQLQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
                 }
                 catch (MySqlException e)
                 {
                     throw new SQLQueryFailException("SQL-Query failed", ReplacePlaceholderInPreparedQuery(), e);
-                }                
+                }
             }
             else
             {
@@ -201,7 +199,7 @@ namespace HelperLibrary.Database
         /// <exception cref="SQLQueryFailException" />
         public void InsertUpdateDelete(string query)
         {
-            if(!IsConnected())
+            if (!IsConnected())
             {
                 Connect();
             }
@@ -214,7 +212,7 @@ namespace HelperLibrary.Database
             try
             {
                 cmd.ExecuteNonQuery();
-                SQLQueryExcecuted(this, new SQLQueryEventArgs(query, SQLQueryEventArgs.QueryType.InsertUpdateDelete));
+                SQLQueryExcecuted?.Invoke(this, new SQLQueryEventArgs(query, SQLQueryEventArgs.QueryType.InsertUpdateDelete));
             }
             catch (MySqlException e)
             {
@@ -243,13 +241,12 @@ namespace HelperLibrary.Database
             try
             {
                 reader = cmd.ExecuteReader();
-                SQLQueryExcecuted(this, new SQLQueryEventArgs(query, SQLQueryEventArgs.QueryType.Select));
+                SQLQueryExcecuted?.Invoke(this, new SQLQueryEventArgs(query, SQLQueryEventArgs.QueryType.Select));
             }
             catch (MySqlException e)
             {
                 throw new SQLQueryFailException("SQL-Query failed!", query, e);
             }
-
 
             return reader;
         }
@@ -259,11 +256,11 @@ namespace HelperLibrary.Database
         /// </summary>
         /// <returns>Last ID</returns>
         public int GetLastID()
-        {            
-            if(!IsConnected())
-            {                
-                Connect();                
-            }            
+        {
+            if (!IsConnected())
+            {
+                Connect();
+            }
 
             MySqlDataReader reader = _instance.Select("SELECT LAST_INSERT_ID()");
             reader.Read();
@@ -272,8 +269,8 @@ namespace HelperLibrary.Database
 
             reader.Close();
 
-            return id;            
-        }      
+            return id;
+        }
 
         /// <summary>
         /// Escapes a string to insert it in Database-Querys and have a protection against SQL-Injections.
@@ -306,6 +303,59 @@ namespace HelperLibrary.Database
                 });
         }
 
+        /// <summary>
+        /// Test if connection is possible with given login-data.
+        /// </summary>
+        /// <param name="server">Address of Database</param>
+        /// <param name="database">Database-Name</param>
+        /// <param name="user">Username</param>
+        /// <param name="passwd">Password</param>
+        /// <returns>True if the Connectionw as successful or throw a <see cref="CouldNotConnectException"/>.</returns>
+        /// <exception cref="CouldNotConnectException" />
+        public static bool TestDatabaseConnection(string server, string database, string user, string passwd)
+        {
+            var connectionString = "Server=" + server + ";Port=3306;Database=" + database + ";uid=" + user + ";pwd=" + passwd + ";";
+            bool isConnected = false;
+            MySqlConnection conn = null;
+            try
+            {
+                conn = new MySqlConnection(connectionString);
+                conn.Open();
+                isConnected = true;
+            }
+            catch (ArgumentException ex)
+            {
+                throw new CouldNotConnectException("Connection Failed!", ex);
+            }
+            catch (MySqlException ex)
+            {
+                isConnected = false;
+                switch (ex.Number)
+                {
+                    //http://dev.mysql.com/doc/refman/5.0/en/error-messages-server.html
+                    case 1042:
+                        // Unable to connect to any of the specified MySQL hosts (Check Server,Port)
+                        throw new CouldNotConnectException("Unable to connect to any of the specified MySQL hosts (Check Server,Port).", ex);
+                        break;
+                    case 0:
+                        // Access denied (Check DB name,username,password)
+                        throw new CouldNotConnectException("Access denied (Check Databasename, Username and Password).", ex);
+                        break;
+                    default:
+                        throw new CouldNotConnectException("Connection Failed!", ex);
+                        break;
+                }
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+            }
+            return isConnected;
+        }
+
         public bool IsConnected()
         {
             if (_connection != null)
@@ -319,16 +369,16 @@ namespace HelperLibrary.Database
         /// </summary>
         /// <returns>Binded SQL-Query.</returns>
         private string ReplacePlaceholderInPreparedQuery()
-        {            
+        {
             string bindedQuery = prepareSQLCommand.CommandText;
 
             foreach (KeyValuePair<string, object> entry in bindedParams)
             {
-                if(entry.Value is int)
+                if (entry.Value is int)
                 {
                     bindedQuery.Replace(entry.Key, entry.Value.ToString());
                 }
-                else if(entry.Value is string)
+                else if (entry.Value is string)
                 {
                     bindedQuery.Replace(entry.Key, "\"" + entry.Value.ToString() + "\"");
                 }
