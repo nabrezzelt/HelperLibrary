@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.3
+VisualStudioVersion = 15.0.26730.8
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelperLibraryUnitTests", "HelperLibraryUnitTests\HelperLibraryUnitTests.csproj", "{C9F76F1D-0D78-4E1C-A92C-3C344FAE363E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelperLibrary", "HelperLibrary\HelperLibrary.csproj", "{3922E085-3615-422B-B706-EF8ADDEAE830}"
 EndProject
 Global
@@ -13,10 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C9F76F1D-0D78-4E1C-A92C-3C344FAE363E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C9F76F1D-0D78-4E1C-A92C-3C344FAE363E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C9F76F1D-0D78-4E1C-A92C-3C344FAE363E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C9F76F1D-0D78-4E1C-A92C-3C344FAE363E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3922E085-3615-422B-B706-EF8ADDEAE830}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3922E085-3615-422B-B706-EF8ADDEAE830}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3922E085-3615-422B-B706-EF8ADDEAE830}.Release|Any CPU.ActiveCfg = Release|Any CPU

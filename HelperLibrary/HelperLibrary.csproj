@@ -45,11 +45,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cryptography\HashManager.cs" />
+    <Compile Include="Database\ColumnNameAttribute.cs" />
     <Compile Include="Database\Exceptions\MissingConnectionStringException.cs" />
     <Compile Include="Database\Exceptions\CouldNotConnectException.cs" />
     <Compile Include="Database\Exceptions\NotConnectedException.cs" />
     <Compile Include="Database\Exceptions\QueryNotPreparedException.cs" />
     <Compile Include="Database\Exceptions\SQLQueryFailException.cs" />
+    <Compile Include="Database\TableMapper.cs" />
     <Compile Include="FileSystem\IniFile.cs" />
     <Compile Include="Cryptography\KeySize.cs" />
     <Compile Include="Database\MySQLDatabaseManager.cs" />
