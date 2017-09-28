@@ -54,6 +54,8 @@
     <Compile Include="Cryptography\KeySize.cs" />
     <Compile Include="Database\MySQLDatabaseManager.cs" />
     <Compile Include="Cryptography\RSAKeyManagement.cs" />
+    <Compile Include="Logging\Log.cs" />
+    <Compile Include="Networking\NetworkUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Database\SQLQueryEventArgs.cs" />
   </ItemGroup>
