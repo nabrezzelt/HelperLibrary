@@ -13,13 +13,14 @@ namespace ClientDemo
     {
         private static Client _client = new Client();
 
+
         static void Main(string[] args)
         {
-            _client.Connect(NetworkUtilities.GetThisIPv4Adress(), 9999);
-
             _client.ConnectionLost += OnConnectionLost;
             _client.ConnectionSucceed += OnConnectionSucceed;
             _client.PacketReceived += OnPacketReceived;
+
+            _client.Connect(NetworkUtilities.GetThisIPv4Adress(), 9999);            
         }
 
         private static void OnPacketReceived(object sender, PacketReceivedEventArgs e)
@@ -42,14 +43,12 @@ namespace ClientDemo
 
         private static void OnConnectionSucceed(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Connection successfull!");
         }
 
         private static void OnConnectionLost(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Connection lost!");
         }
-
-
     }
 }

@@ -5,9 +5,9 @@ namespace HelperLibrary.Networking.ClientServer
 {
     public class PacketReceivedEventArgs : EventArgs
     {
-        public BasePacket Packet;
+        public object Packet;
 
-        public PacketReceivedEventArgs(BasePacket packet)
+        public PacketReceivedEventArgs(object packet)
         {
             Packet = packet;
         }

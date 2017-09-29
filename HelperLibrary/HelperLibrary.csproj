@@ -54,8 +54,9 @@
     <Compile Include="Cryptography\KeySize.cs" />
     <Compile Include="Database\MySQLDatabaseManager.cs" />
     <Compile Include="Cryptography\RSAKeyManagement.cs" />
-    <Compile Include="Logging\Log.cs" />
+    <Compile Include="Logging\Logger.cs" />
     <Compile Include="Networking\ClientServer\Client.cs" />
+    <Compile Include="Networking\ClientServer\Exceptions\ConnectionFailedException.cs" />
     <Compile Include="Networking\ClientServer\IClient.cs" />
     <Compile Include="Networking\ClientServer\PacketReceivedEventArgs.cs" />
     <Compile Include="Networking\ClientServer\Packets\BasePacket.cs" />

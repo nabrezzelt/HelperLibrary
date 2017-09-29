@@ -1,4 +1,5 @@
 ﻿using HelperLibrary.Logging;
+using HelperLibrary.Networking.ClientServer.Exceptions;
 using HelperLibrary.Networking.ClientServer.Packets;
 using System;
 using System.IO;
@@ -11,9 +12,11 @@ namespace HelperLibrary.Networking.ClientServer
     public class Client : IClient
     {
         public event EventHandler ConnectionSucceed;
-        public event EventHandler ConnectionLost;
+        public event EventHandler ConnectionLost;        
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
 
+        private IPAddress _serverIP;
+        private int _port;
         private TcpClient _tcpClient;
         private bool _debug;
         private NetworkStream _clientStream;
@@ -25,11 +28,14 @@ namespace HelperLibrary.Networking.ClientServer
 
         public void Connect(IPAddress serverIP, int port)
         {
-            ConnectToServer(serverIP, port);
+            _serverIP = serverIP;
+            _port = port;
+
+            ConnectToServer();
             StartReceivingData();
         }
 
-        private void ConnectToServer(IPAddress serverIP, int port)
+        private void ConnectToServer()
         {
             _tcpClient = new TcpClient();
 
@@ -37,18 +43,17 @@ namespace HelperLibrary.Networking.ClientServer
             {
                 try
                 {
-                    Log.Info("Trying to connect to server at " + serverIP + " on port " + port + "...");
+                    Log.Info("Trying to connect to server at " + _serverIP + " on port " + _port + "...");
 
-                    _tcpClient.Connect(new IPEndPoint(serverIP, port));
+                    _tcpClient.Connect(new IPEndPoint(_serverIP, _port));
                     ConnectionSucceed?.Invoke(this, new EventArgs());
 
                     Log.Info("Connected");
                 }
                 catch (Exception e)
                 {
-                    Log.Fatal(e.Message);
-                    throw;
-                }
+                    Log.Error(e.Message + Environment.NewLine);                                        
+                }                
             }
         }
 
@@ -83,14 +88,13 @@ namespace HelperLibrary.Networking.ClientServer
                 }
 
                 //Daten sind im Buffer-Array gespeichert
-                PacketReceived?.Invoke(this, new PacketReceivedEventArgs((BasePacket)BasePacket.Deserialize(buffer)));
+                PacketReceived?.Invoke(this, new PacketReceivedEventArgs(BasePacket.Deserialize(buffer)));
             }
             catch (IOException ex)
             {
                 Log.Info(ex.Message);
                 Log.Info("Server disconnected!");
-                Console.ReadLine();
-                Environment.Exit(0);
+                ConnectionLost?.Invoke(this, EventArgs.Empty);
             }
         }
 
