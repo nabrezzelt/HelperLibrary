@@ -1,21 +1,24 @@
-﻿using HelperLibrary.Networking.ClientServer;
-using HelperLibrary.Networking;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using HelperLibrary.Networking;
+using HelperLibrary.Networking.ClientServer;
 using HelperLibrary.Networking.ClientServer.Packets;
+using System;
+using PacketLibrary;
 
 namespace ClientDemo
 {
     class TestClient
     {
-        private static Client _client = new Client();
+        private static Client _client;
+        private static string _uid;
 
-
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
+            //Uid setzen:
+            Console.Write("Set your Uid: ");
+            _uid = Console.ReadLine();
+
+            _client = new Client();
+
             _client.ConnectionLost += OnConnectionLost;
             _client.ConnectionSucceed += OnConnectionSucceed;
             _client.PacketReceived += OnPacketReceived;
@@ -37,6 +40,7 @@ namespace ClientDemo
                     break;
                 
                 default:
+                    Console.WriteLine("Unhandled Packet");
                     break;
             }
         }
@@ -44,11 +48,20 @@ namespace ClientDemo
         private static void OnConnectionSucceed(object sender, EventArgs e)
         {
             Console.WriteLine("Connection successfull!");
+
+            AuthenticateToServer();
+
+            Console.WriteLine("Authetication-Packet send");
         }
 
         private static void OnConnectionLost(object sender, EventArgs e)
         {
             Console.WriteLine("Connection lost!");
+        }
+
+        private static void AuthenticateToServer()
+        {
+            _client.SendPacketToServer(new AuthenticationPacket(_uid, Router.ServerWildcard));
         }
     }
 }

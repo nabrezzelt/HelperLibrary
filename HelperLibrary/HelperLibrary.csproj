@@ -55,11 +55,15 @@
     <Compile Include="Database\MySQLDatabaseManager.cs" />
     <Compile Include="Cryptography\RSAKeyManagement.cs" />
     <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Networking\ClientServer\BaseClientData.cs" />
     <Compile Include="Networking\ClientServer\Client.cs" />
+    <Compile Include="Networking\ClientServer\ClientConnectedEventArgs.cs" />
+    <Compile Include="Networking\ClientServer\ClientDisconnectedEventArgs.cs" />
     <Compile Include="Networking\ClientServer\Exceptions\ConnectionFailedException.cs" />
     <Compile Include="Networking\ClientServer\IClient.cs" />
     <Compile Include="Networking\ClientServer\PacketReceivedEventArgs.cs" />
     <Compile Include="Networking\ClientServer\Packets\BasePacket.cs" />
+    <Compile Include="Networking\ClientServer\Router.cs" />
     <Compile Include="Networking\ClientServer\Server.cs" />
     <Compile Include="Networking\NetworkUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -7,13 +7,11 @@ namespace HelperLibrary.Networking.ClientServer.Packets
     [Serializable]
     public abstract class BasePacket
     {        
-        public string PacketType;
         public string SenderUid;
         public string DestinationUid;
 
-        protected BasePacket(string packetType, string senderUid, string destinationUid)
+        protected BasePacket(string senderUid, string destinationUid)
         {
-            PacketType = packetType;
             SenderUid = senderUid;
             DestinationUid = destinationUid;
         }

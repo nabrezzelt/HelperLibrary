@@ -33,6 +33,7 @@ namespace HelperLibrary.Networking.ClientServer
 
             ConnectToServer();
             StartReceivingData();
+            ConnectionSucceed?.Invoke(this, EventArgs.Empty);
         }
 
         private void ConnectToServer()
@@ -46,7 +47,6 @@ namespace HelperLibrary.Networking.ClientServer
                     Log.Info("Trying to connect to server at " + _serverIP + " on port " + _port + "...");
 
                     _tcpClient.Connect(new IPEndPoint(_serverIP, _port));
-                    ConnectionSucceed?.Invoke(this, new EventArgs());
 
                     Log.Info("Connected");
                 }
@@ -59,8 +59,10 @@ namespace HelperLibrary.Networking.ClientServer
 
         private void StartReceivingData()
         {
+            Log.Info("Starting incomming data handler...");
             Thread receiveDataThread = new Thread(HandleIncommingData);
             receiveDataThread.Start();
+            Log.Info("Incomming data handler started.");
         }
 
         private void HandleIncommingData()
@@ -88,7 +90,7 @@ namespace HelperLibrary.Networking.ClientServer
                 }
 
                 //Daten sind im Buffer-Array gespeichert
-                PacketReceived?.Invoke(this, new PacketReceivedEventArgs(BasePacket.Deserialize(buffer)));
+                PacketReceived?.Invoke(this, new PacketReceivedEventArgs(BasePacket.Deserialize(buffer), _tcpClient));
             }
             catch (IOException ex)
             {
@@ -122,6 +124,10 @@ namespace HelperLibrary.Networking.ClientServer
 
             var length = packetBytes.Length;
             var lengthBytes = BitConverter.GetBytes(length);
+
+            if (_clientStream == null)
+                _clientStream = _tcpClient.GetStream();
+
             _clientStream.Write(lengthBytes, 0, 4); //Senden der Länge/Größe des Textes
             _clientStream.Write(packetBytes, 0, packetBytes.Length); //Senden der eingentlichen Daten/des Textes   
         }        
