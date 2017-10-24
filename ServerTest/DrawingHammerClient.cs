@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.IO;
+using System.Net.Sockets;
 using HelperLibrary.Networking.ClientServer;
 
 namespace ServerDemo
@@ -7,12 +8,12 @@ namespace ServerDemo
     {
         public int Score;
 
-        public DrawingHammerClient(int score, Server serverInstance, TcpClient client) : base(serverInstance, client)
+        public DrawingHammerClient(int score, Server serverInstance, TcpClient client, Stream stream) : base(serverInstance, client, stream)
         {
             Score = score;
         }
 
-        public DrawingHammerClient(Server serverInstance, TcpClient client) : base(serverInstance, client)
+        public DrawingHammerClient(Server serverInstance, TcpClient client, Stream stream) : base(serverInstance, client, stream)
         {
             Score = 0;
         }

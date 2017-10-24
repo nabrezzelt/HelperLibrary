@@ -11,20 +11,34 @@ namespace HelperLibrary.Networking.ClientServer
 {
     public abstract class Server
     {
-        private readonly Router _router;
-        private TcpListener _listener;
-        private readonly int _port;
+        protected readonly Router Router;
+        protected TcpListener Listener;
+        protected readonly int Port;
         public List<BaseClientData> Clients { get; } = new List<BaseClientData>();
 
         public event EventHandler<ClientConnectedEventArgs> ClientConnected;
         public event EventHandler<ClientDisconnectedEventArgs> ClientDisconnected;
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
 
+        protected void OnClientConnected(ClientConnectedEventArgs e)
+        {
+            ClientConnected?.Invoke(this, e);
+        }
+
+        protected void OnClientDisconnected(ClientDisconnectedEventArgs e)
+        {
+            ClientDisconnected?.Invoke(this, e);
+        }
+
+        protected void OnPacketReceived(PacketReceivedEventArgs e)
+        {
+            PacketReceived?.Invoke(this, e);
+        }
 
         protected Server(int port)
         {
-            _port = port;
-            _router = new Router(this);
+            Port = port;
+            Router = new Router(this);
 
             InitializeListener();
         }
@@ -37,35 +51,35 @@ namespace HelperLibrary.Networking.ClientServer
 
         protected void InitializeListener()
         {
-            Log.Info("Starting server on " + NetworkUtilities.GetThisIPv4Adress() + " on port " + _port);
+            Log.Info("Starting server on " + NetworkUtilities.GetThisIPv4Adress() + " on port " + Port);
 
-            _listener = new TcpListener(new IPEndPoint(IPAddress.Parse(NetworkUtilities.GetThisIPv4Adress()), _port));
+            Listener = new TcpListener(new IPEndPoint(IPAddress.Parse(NetworkUtilities.GetThisIPv4Adress()), Port));
 
             Log.Info("Server started. Waiting for new Client connections...");
         }
 
-        protected void ListenOnNewClients()
+        protected virtual void ListenOnNewClients()
         {
-            _listener.Start();
+            Listener.Start();
 
             while (true)
             {
-                TcpClient connectedClient = _listener.AcceptTcpClient();
+                TcpClient connectedClient = Listener.AcceptTcpClient();
 
-                var client = HandleNewConnectedClient(connectedClient);
+                var client = HandleNewConnectedClient(connectedClient, connectedClient.GetStream());
 
                 Clients.Add(client);                
                 ClientConnected?.Invoke(this, new ClientConnectedEventArgs(client));
                 Log.Info("New Client connected (IP: " + connectedClient.Client.RemoteEndPoint + ")");
-            }            
+            }                        
         }
 
-        protected abstract BaseClientData HandleNewConnectedClient(TcpClient connectedClient);
+        public abstract BaseClientData HandleNewConnectedClient(TcpClient connectedClient, Stream stream);
 
-        public void DataIn(object tcpClient)
+        public void DataIn(object clientData)
         {
-            TcpClient client = (TcpClient)tcpClient;
-            NetworkStream clientStream = client.GetStream();
+            BaseClientData client = (BaseClientData)clientData;
+            var clientStream = client.ClientStream;
             try
             {
                 while (true)
@@ -89,12 +103,13 @@ namespace HelperLibrary.Networking.ClientServer
                     }
 
                     //Daten sind im Buffer-Array
-                    _router.DistributePacket((BasePacket)BasePacket.Deserialize(buffer), client);
+                    Router.DistributePacket((BasePacket)BasePacket.Deserialize(buffer), client.TcpClient);
                 }
             }            
-            catch (IOException)
+            catch (IOException e)
             {
-                BaseClientData disconnectedClient = _router.GetClientFromList(client);
+                Log.Debug(e.ToString());
+                BaseClientData disconnectedClient = Router.GetClientFromList(client.TcpClient);
                 Log.Info("Client disconnected with UID: " + disconnectedClient.Uid);
                 Clients.Remove(disconnectedClient);
                 Log.Info("Client removed from list.");
@@ -110,12 +125,12 @@ namespace HelperLibrary.Networking.ClientServer
 
         public BaseClientData GetClientByUid(string clientUid)
         {
-            return _router.GetClientFromList(clientUid);
+            return Router.GetClientFromList(clientUid);
         }
 
-        public BaseClientData GetClientByUid(TcpClient tcpClient)
+        public BaseClientData GetClientByTcpClient(TcpClient tcpClient)
         {
-            return _router.GetClientFromList(tcpClient);
+            return Router.GetClientFromList(tcpClient);
         }
     }
 }
