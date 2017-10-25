@@ -7,59 +7,57 @@ namespace HelperLibrary.FileSystem
 {
     public class IniFile
     {
-        private string path;
-
-        public string Path { get => path; }
+        public readonly string Path;
 
         [DllImport("kernel32")]
-        static extern long WritePrivateProfileString(string Section, string Key, string Value, string FilePath);
+        static extern long WritePrivateProfileString(string section, string key, string value, string filePath);
 
         [DllImport("kernel32")]
-        static extern int GetPrivateProfileString(string Section, string Key, string Default, StringBuilder RetVal, int Size, string FilePath);
+        static extern int GetPrivateProfileString(string section, string key, string Default, StringBuilder retVal, int size, string filePath);
 
         public static IniFile OpenFile()
         {            
-            var path = new FileInfo(GetAssembyName() + ".ini").FullName.ToString();
+            var path = new FileInfo(GetAssembyName() + ".ini").FullName;
 
             return new IniFile(path);
         }
 
         public static IniFile OpenFile(string pathToIni)
         {
-            var path = new FileInfo(pathToIni).FullName.ToString();
+            var path = new FileInfo(pathToIni).FullName;
 
             return new IniFile(path);
         }
 
         private IniFile(string path)
         {
-            this.path = path;
+            Path = path;
         }
 
         public string ReadValue(string key)
         {
-            var RetVal = new StringBuilder(255);
-            GetPrivateProfileString(GetAssembyName(), key, "", RetVal, 255, path);
+            var retVal = new StringBuilder(255);
+            GetPrivateProfileString(GetAssembyName(), key, "", retVal, 255, Path);
 
-            return RetVal.ToString();
+            return retVal.ToString();
         }
 
         public string ReadValue(string key, string section)
         {
-            var RetVal = new StringBuilder(255);
-            GetPrivateProfileString(section, key, "", RetVal, 255, path);
+            var retVal = new StringBuilder(255);
+            GetPrivateProfileString(section, key, "", retVal, 255, Path);
 
-            return RetVal.ToString();
+            return retVal.ToString();
         }
 
         public void WriteValue(string key, string value)
         {
-            WritePrivateProfileString(GetAssembyName(), key, value, path);
+            WritePrivateProfileString(GetAssembyName(), key, value, Path);
         }
 
         public void WriteValue(string key, string value, string section)
         {
-            WritePrivateProfileString(section, key, value, path);
+            WritePrivateProfileString(section, key, value, Path);
         }     
 
         public void DeleteKey(string key)

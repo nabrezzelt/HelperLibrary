@@ -6,18 +6,18 @@ namespace HelperLibrary.Cryptography
 {
     public class HashManager
     {
-        public static string HashSHA512(string text)
+        public static string HashSha512(string text)
         {
             if (string.IsNullOrEmpty(text))
             {
                 throw new ArgumentException("Text can not be empty.", nameof(text));
             }
 
-            byte[] textBytes = Encoding.UTF8.GetBytes(text);
-            return HashSHA512(textBytes);
+            byte[] textBytes = TextToBytes(text);
+            return HashSha512(textBytes);
         }
 
-        public static string HashSHA512(byte[] data)
+        public static string HashSha512(byte[] data)
         {
             using (var sha = new SHA512Managed())
             {                
@@ -26,18 +26,18 @@ namespace HelperLibrary.Cryptography
             }
         }
 
-        public static string HashSHA384(string text)
+        public static string HashSha384(string text)
         {
             if (string.IsNullOrEmpty(text))
             {
                 throw new ArgumentException("Text can not be empty.", nameof(text));
             }
 
-            byte[] textBytes = Encoding.UTF8.GetBytes(text);
-            return HashSHA384(textBytes);
+            byte[] textBytes = TextToBytes(text);
+            return HashSha384(textBytes);
         }
 
-        public static string HashSHA384(byte[] data)
+        public static string HashSha384(byte[] data)
         {
             using (var sha = new SHA384Managed())
             {               
@@ -46,18 +46,18 @@ namespace HelperLibrary.Cryptography
             }
         }
 
-        public static string HashSHA256(string text)
+        public static string HashSha256(string text)
         {
             if (string.IsNullOrEmpty(text))
             {
                 throw new ArgumentException("Text can not be empty.", nameof(text));
             }
 
-            byte[] textBytes = Encoding.UTF8.GetBytes(text);
-            return HashSHA256(textBytes);
+            byte[] textBytes = TextToBytes(text);
+            return HashSha256(textBytes);
         }
 
-        public static string HashSHA256(byte[] data)
+        public static string HashSha256(byte[] data)
         {
             using (var sha = new SHA256Managed())
             {                
@@ -66,18 +66,18 @@ namespace HelperLibrary.Cryptography
             }
         }
 
-        public static string HashSHA1(string text)
+        public static string HashSha1(string text)
         {
             if (string.IsNullOrEmpty(text))
             {
                 throw new ArgumentException("Text can not be empty.", nameof(text));
             }
 
-            byte[] textBytes = Encoding.UTF8.GetBytes(text);
-            return HashSHA1(textBytes);
+            byte[] textBytes = TextToBytes(text);
+            return HashSha1(textBytes);
         }
 
-        public static string HashSHA1(byte[] data)
+        public static string HashSha1(byte[] data)
         {
             using (var sha = new SHA1Managed())
             {                
@@ -86,18 +86,18 @@ namespace HelperLibrary.Cryptography
             }
         }
 
-        public static string HashMD5(string text)
+        public static string HashMd5(string text)
         {
             if (string.IsNullOrEmpty(text))
             {
                 throw new ArgumentException("Text can not be empty.", nameof(text));
             }
 
-            byte[] textBytes = Encoding.UTF8.GetBytes(text);
-            return HashMD5(textBytes);
+            byte[] textBytes = TextToBytes(text);
+            return HashMd5(textBytes);
         }
 
-        public static string HashMD5(byte[] data)
+        public static string HashMd5(byte[] data)
         {
             using (MD5 md5 = MD5.Create())
             {                

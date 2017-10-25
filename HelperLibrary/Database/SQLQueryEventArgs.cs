@@ -8,11 +8,9 @@ namespace HelperLibrary.Database
 {
     public class SQLQueryEventArgs : EventArgs
     {
-        private string _query;
-        private QueryType _type;
+        public string Query;
 
-        public string Query { get => _query; set => _query = value; }
-        public QueryType Type { get => _type; set => _type = value; }
+        public QueryType Type;
 
         public SQLQueryEventArgs(string query, QueryType type)
         {
