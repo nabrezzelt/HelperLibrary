@@ -11,6 +11,11 @@ namespace HelperLibrary.Networking.ClientServer
     {
         private readonly X509Certificate2 _certificate;
 
+        /// <summary>
+        /// Initialize a new <see cref="SslServer"/> with <see cref="X509Certificate2"/> and a given port.
+        /// </summary>
+        /// <param name="certificate"></param>
+        /// <param name="port"></param>
         protected SslServer(X509Certificate2 certificate, int port) : base(port)
         {
             _certificate = certificate;

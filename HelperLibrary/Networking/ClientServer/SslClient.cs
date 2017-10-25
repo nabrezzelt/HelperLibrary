@@ -13,6 +13,11 @@ namespace HelperLibrary.Networking.ClientServer
         private readonly string _serverName;
         private readonly bool _allowUntrustedRootCa;
 
+        /// <summary>
+        /// Initalize new SslClient.
+        /// </summary>
+        /// <param name="serverName">Servername specified in Servers certificate</param>
+        /// <param name="allowUntrustedRootCa">Set if untrusted root CAs are allowed (for selfsigned Certificates it must be true).</param>
         public SslClient(string serverName, bool allowUntrustedRootCa = false)
         {
             _serverName = serverName;

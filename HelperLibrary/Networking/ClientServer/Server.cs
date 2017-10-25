@@ -14,10 +14,26 @@ namespace HelperLibrary.Networking.ClientServer
         protected readonly Router Router;
         protected TcpListener Listener;
         protected readonly int Port;
+
+        /// <summary>
+        /// List containing all clients.
+        /// </summary>
         public List<BaseClientData> Clients { get; } = new List<BaseClientData>();
 
+        #region Events
+        /// <summary>
+        /// Fired when a new client is connected to the server.
+        /// </summary>
         public event EventHandler<ClientConnectedEventArgs> ClientConnected;
+
+        /// <summary>
+        /// Fired when a client closed/lost the connection to the server.
+        /// </summary>
         public event EventHandler<ClientDisconnectedEventArgs> ClientDisconnected;
+
+        /// <summary>
+        /// Fired when a packet is received by any client.
+        /// </summary>
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
 
         protected void OnClientConnected(ClientConnectedEventArgs e)
@@ -30,11 +46,16 @@ namespace HelperLibrary.Networking.ClientServer
             ClientDisconnected?.Invoke(this, e);
         }
 
-        protected void OnPacketReceived(PacketReceivedEventArgs e)
+        protected void OnPacketReceived(object sender, PacketReceivedEventArgs e)
         {
-            PacketReceived?.Invoke(this, e);
+            PacketReceived?.Invoke(sender, e);
         }
+        #endregion
 
+        /// <summary>
+        /// Initalize a new Server on a given port.
+        /// </summary>
+        /// <param name="port"></param>
         protected Server(int port)
         {
             Port = port;
@@ -43,6 +64,9 @@ namespace HelperLibrary.Networking.ClientServer
             InitializeListener();
         }
 
+        /// <summary>
+        /// Starts the server on given IP and port.
+        /// </summary>
         public void Start()
         {            
             Thread listenForNewClients = new Thread(ListenOnNewClients);
@@ -69,14 +93,14 @@ namespace HelperLibrary.Networking.ClientServer
                 var client = HandleNewConnectedClient(connectedClient, connectedClient.GetStream());
 
                 Clients.Add(client);                
-                ClientConnected?.Invoke(this, new ClientConnectedEventArgs(client));
+                OnClientConnected(new ClientConnectedEventArgs(client));
                 Log.Info("New Client connected (IP: " + connectedClient.Client.RemoteEndPoint + ")");
             }                        
         }
-
+        
         public abstract BaseClientData HandleNewConnectedClient(TcpClient connectedClient, Stream stream);
 
-        public void DataIn(object clientData)
+        internal void DataIn(object clientData)
         {
             BaseClientData client = (BaseClientData)clientData;
             var clientStream = client.ClientStream;
@@ -114,20 +138,35 @@ namespace HelperLibrary.Networking.ClientServer
                 Clients.Remove(disconnectedClient);
                 Log.Info("Client removed from list.");
 
-                ClientDisconnected?.Invoke(this, new ClientDisconnectedEventArgs(disconnectedClient.Uid));
+                OnClientDisconnected(new ClientDisconnectedEventArgs(disconnectedClient.Uid));
             }
         }
 
+        /// <summary>
+        /// Handle
+        /// </summary>
+        /// <param name="packet"></param>
+        /// <param name="senderTcpClient"></param>
         public void HandleIncommingData(BasePacket packet, TcpClient senderTcpClient)
         {
-            PacketReceived?.Invoke(senderTcpClient, new PacketReceivedEventArgs(packet, senderTcpClient));
+            OnPacketReceived(senderTcpClient, new PacketReceivedEventArgs(packet, senderTcpClient));
         }
 
+        /// <summary>
+        /// Get a registred client by uid.
+        /// </summary>
+        /// <param name="clientUid">Uid of the client</param>
+        /// <returns></returns>
         public BaseClientData GetClientByUid(string clientUid)
         {
             return Router.GetClientFromList(clientUid);
         }
 
+        /// <summary>
+        /// Get a connected client by connection.
+        /// </summary>
+        /// <param name="tcpClient"></param>
+        /// <returns></returns>
         public BaseClientData GetClientByTcpClient(TcpClient tcpClient)
         {
             return Router.GetClientFromList(tcpClient);

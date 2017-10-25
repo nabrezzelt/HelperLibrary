@@ -10,8 +10,19 @@ namespace HelperLibrary.Networking.ClientServer
 {
     public class Client
     {
+        /// <summary>
+        /// Fired when connection to server succeed.
+        /// </summary>
         public event EventHandler ConnectionSucceed;
-        public event EventHandler ConnectionLost;        
+
+        /// <summary>
+        /// Fired when connection to server is lost.
+        /// </summary>
+        public event EventHandler ConnectionLost;  
+        
+        /// <summary>
+        /// Fired when client receives a packet.
+        /// </summary>
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
 
         protected IPAddress ServerIP;
@@ -19,6 +30,11 @@ namespace HelperLibrary.Networking.ClientServer
         protected TcpClient TcpClient;
         protected Stream ClientStream;
 
+        /// <summary>
+        /// Initialize the connection to the server.
+        /// </summary>
+        /// <param name="serverIP">Server IP</param>
+        /// <param name="port">Port to connect</param>
         public void Connect(IPAddress serverIP, int port)
         {
             ServerIP = serverIP;
@@ -27,6 +43,12 @@ namespace HelperLibrary.Networking.ClientServer
             ConnectToServer();
             StartReceivingData();
             ConnectionSucceed?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <inheritdoc />
+        public void Connect(string serverIP, int port)
+        {
+            Connect(IPAddress.Parse(serverIP), port);
         }
 
         protected virtual void ConnectToServer()
@@ -90,23 +112,25 @@ namespace HelperLibrary.Networking.ClientServer
                 Log.Info("Server connection lost!");
                 ConnectionLost?.Invoke(this, EventArgs.Empty);
             }
-        }
+        }        
 
-
-        public void Connect(string serverIP, int port)
-        {
-            Connect(IPAddress.Parse(serverIP), port);
-        }
-
+        /// <summary>
+        /// Close the connection to the server.
+        /// </summary>
         public void Disconnect()
         {
             if (!TcpClient.Connected)
                 throw new InvalidOperationException("You're not connected!");
 
+            ClientStream.Close();
             TcpClient.Close();
             Log.Info("Disconnected!");
         }
 
+        /// <summary>
+        /// Send a packet to the server.
+        /// </summary>
+        /// <param name="packet">Packet to send</param>
         public virtual void SendPacketToServer(BasePacket packet)
         {
             if(!TcpClient.Connected)
