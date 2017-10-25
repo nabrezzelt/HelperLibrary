@@ -5,19 +5,18 @@ using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
-using HelperLibrary.Networking.ClientServer.Packets;
 
 namespace HelperLibrary.Networking.ClientServer
 {
     public class SslClient : Client
     {
         private readonly string _serverName;
-        //private readonly bool _trustSelfGeneratedCertificated;
+        private readonly bool _allowUntrustedRootCa;
 
-        public SslClient(string serverName/*, bool trustSelfGeneratedCertificated = false*/)
+        public SslClient(string serverName, bool allowUntrustedRootCa = false)
         {
             _serverName = serverName;
-            //_trustSelfGeneratedCertificated = trustSelfGeneratedCertificated;
+            _allowUntrustedRootCa = allowUntrustedRootCa;
         }
 
         protected override void ConnectToServer()
@@ -35,6 +34,10 @@ namespace HelperLibrary.Networking.ClientServer
                     Log.SslStreamInformation((SslStream) ClientStream);
                     Log.Info("Connected");
                 }
+                catch (AuthenticationException)
+                {
+                    throw;
+                }
                 catch (Exception e)
                 {
                     Log.Error(e.Message + Environment.NewLine);
@@ -44,7 +47,7 @@ namespace HelperLibrary.Networking.ClientServer
 
         private void InitializeSslConnection(string serverName)
         {
-            // Create an SSL stream that will close the client's stream.
+            // Create an SSL stream that will close the client's stream.            
             ClientStream = new SslStream(TcpClient.GetStream(), false, ValidateServerCertificate, null);
 
             var sslStream = (SslStream) ClientStream;
@@ -66,30 +69,42 @@ namespace HelperLibrary.Networking.ClientServer
         }
 
         private bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-        {            
-            // remove this line if commercial CAs are not allowed to issue certificate for your service.
-            if ((sslPolicyErrors & SslPolicyErrors.None) > 0)
+        {
+            if (_allowUntrustedRootCa)
             {
-                return true;
-            }
-
-            if ((sslPolicyErrors & (SslPolicyErrors.RemoteCertificateNameMismatch)) > 0 ||(sslPolicyErrors & (SslPolicyErrors.RemoteCertificateNotAvailable)) > 0)
-            {
-                return false; 
-                
-            }
-
-            // execute certificate chaining engine and ignore only "UntrustedRoot" error
-            X509Chain customChain = new X509Chain
-            {
-                ChainPolicy = {
-                    VerificationFlags = X509VerificationFlags.AllowUnknownCertificateAuthority
+                // remove this line if commercial CAs are not allowed to issue certificate for your service.
+                if ((sslPolicyErrors & SslPolicyErrors.None) > 0)
+                {
+                    return true;
                 }
-            };
-            Boolean retValue = customChain.Build(chain.ChainElements[0].Certificate);
-            // RELEASE unmanaged resources behind X509Chain class.
-            customChain.Reset();
-            return retValue;
+
+                if ((sslPolicyErrors & SslPolicyErrors.RemoteCertificateNameMismatch) > 0 || (sslPolicyErrors & SslPolicyErrors.RemoteCertificateNotAvailable) > 0)
+                {
+                    return false;
+
+                }
+
+                // execute certificate chaining engine and ignore only "UntrustedRoot" error
+                X509Chain customChain = new X509Chain
+                {
+                    ChainPolicy = {
+                        VerificationFlags = X509VerificationFlags.AllowUnknownCertificateAuthority
+                    }
+                };
+                Boolean retValue = customChain.Build(chain.ChainElements[0].Certificate);
+                // RELEASE unmanaged resources behind X509Chain class.
+                customChain.Reset();
+                return retValue;
+            }
+
+            //Full Certificate-Validation
+            if (sslPolicyErrors == SslPolicyErrors.None)
+                return true;
+
+            Console.WriteLine("Certificate error: {0}", sslPolicyErrors);
+
+            // Do not allow this client to communicate with unauthenticated servers.
+            return false;
         }       
     }    
 }

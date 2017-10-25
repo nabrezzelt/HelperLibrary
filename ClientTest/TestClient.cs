@@ -18,7 +18,8 @@ namespace ClientDemo
             Console.Write("Set your Uid: ");
             _uid = Console.ReadLine();
 
-            _client = new SslClient(NetworkUtilities.GetThisIPv4Adress());
+
+            _client = new SslClient(NetworkUtilities.GetThisIPv4Adress(), true);
 
             _client.ConnectionLost += OnConnectionLost;
             _client.ConnectionSucceed += OnConnectionSucceed;
