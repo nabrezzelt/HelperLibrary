@@ -1,5 +1,4 @@
 ﻿using HelperLibrary.Logging;
-using HelperLibrary.Networking.ClientServer.Exceptions;
 using HelperLibrary.Networking.ClientServer.Packets;
 using System;
 using System.IO;
@@ -9,44 +8,61 @@ using System.Threading;
 
 namespace HelperLibrary.Networking.ClientServer
 {
-    public class Client : IClient
+    public class Client
     {
+        /// <summary>
+        /// Fired when connection to server succeed.
+        /// </summary>
         public event EventHandler ConnectionSucceed;
-        public event EventHandler ConnectionLost;        
+
+        /// <summary>
+        /// Fired when connection to server is lost.
+        /// </summary>
+        public event EventHandler ConnectionLost;  
+        
+        /// <summary>
+        /// Fired when client receives a packet.
+        /// </summary>
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
 
-        private IPAddress _serverIP;
-        private int _port;
-        private TcpClient _tcpClient;
-        private bool _debug;
-        private NetworkStream _clientStream;
+        protected IPAddress ServerIP;
+        protected int Port;
+        protected TcpClient TcpClient;
+        protected Stream ClientStream;
 
-        public Client(bool debug = false)
-        {
-            _debug = debug;
-        }
-
+        /// <summary>
+        /// Initialize the connection to the server.
+        /// </summary>
+        /// <param name="serverIP">Server IP</param>
+        /// <param name="port">Port to connect</param>
         public void Connect(IPAddress serverIP, int port)
         {
-            _serverIP = serverIP;
-            _port = port;
+            ServerIP = serverIP;
+            Port = port;
 
             ConnectToServer();
             StartReceivingData();
             ConnectionSucceed?.Invoke(this, EventArgs.Empty);
         }
 
-        private void ConnectToServer()
+        /// <inheritdoc />
+        public void Connect(string serverIP, int port)
         {
-            _tcpClient = new TcpClient();
+            Connect(IPAddress.Parse(serverIP), port);
+        }
 
-            while (!_tcpClient.Connected)
+        protected virtual void ConnectToServer()
+        {
+            TcpClient = new TcpClient();
+
+            while (!TcpClient.Connected)
             {
                 try
                 {
-                    Log.Info("Trying to connect to server at " + _serverIP + " on port " + _port + "...");
+                    Log.Info("Trying to connect to server at " + ServerIP + " on port " + Port + "...");
 
-                    _tcpClient.Connect(new IPEndPoint(_serverIP, _port));
+                    TcpClient.Connect(new IPEndPoint(ServerIP, Port));
+                    ClientStream = TcpClient.GetStream();
 
                     Log.Info("Connected");
                 }
@@ -66,19 +82,17 @@ namespace HelperLibrary.Networking.ClientServer
         }
 
         private void HandleIncommingData()
-        {
-            _clientStream = _tcpClient.GetStream();
-
+        {            
             try
             {
                 byte[] buffer; //Daten
                 byte[] dataSize = new byte[4]; //Länge
 
-                int readBytes = _clientStream.Read(dataSize, 0, 4);
+                int readBytes = ClientStream.Read(dataSize, 0, 4);
 
                 while (readBytes != 4)
                 {
-                    readBytes += _clientStream.Read(dataSize, readBytes, 4 - readBytes);
+                    readBytes += ClientStream.Read(dataSize, readBytes, 4 - readBytes);
                 }
                 var contentLength = BitConverter.ToInt32(dataSize, 0);
 
@@ -86,50 +100,49 @@ namespace HelperLibrary.Networking.ClientServer
                 readBytes = 0;
                 while (readBytes != buffer.Length)
                 {
-                    readBytes += _clientStream.Read(buffer, readBytes, buffer.Length - readBytes);
+                    readBytes += ClientStream.Read(buffer, readBytes, buffer.Length - readBytes);
                 }
 
                 //Daten sind im Buffer-Array gespeichert
-                PacketReceived?.Invoke(this, new PacketReceivedEventArgs(BasePacket.Deserialize(buffer), _tcpClient));
+                PacketReceived?.Invoke(this, new PacketReceivedEventArgs(BasePacket.Deserialize(buffer), TcpClient));
             }
             catch (IOException ex)
             {
                 Log.Info(ex.Message);
-                Log.Info("Server disconnected!");
+                Log.Info("Server connection lost!");
                 ConnectionLost?.Invoke(this, EventArgs.Empty);
             }
-        }
+        }        
 
-
-        public void Connect(string serverIP, int port)
-        {
-            Connect(IPAddress.Parse(serverIP), port);
-        }
-
+        /// <summary>
+        /// Close the connection to the server.
+        /// </summary>
         public void Disconnect()
         {
-            if (!_tcpClient.Connected)
-                throw new NotImplementedException();
+            if (!TcpClient.Connected)
+                throw new InvalidOperationException("You're not connected!");
 
-            _tcpClient.Close();
+            ClientStream.Close();
+            TcpClient.Close();
             Log.Info("Disconnected!");
         }
 
-        public void SendPacketToServer(BasePacket packet)
+        /// <summary>
+        /// Send a packet to the server.
+        /// </summary>
+        /// <param name="packet">Packet to send</param>
+        public virtual void SendPacketToServer(BasePacket packet)
         {
-            if(!_tcpClient.Connected)
-                throw new NotImplementedException();
+            if(!TcpClient.Connected)
+                throw new InvalidOperationException("You're not connected!");
 
             byte[] packetBytes = BasePacket.Serialize(packet);
 
             var length = packetBytes.Length;
-            var lengthBytes = BitConverter.GetBytes(length);
+            var lengthBytes = BitConverter.GetBytes(length);            
 
-            if (_clientStream == null)
-                _clientStream = _tcpClient.GetStream();
-
-            _clientStream.Write(lengthBytes, 0, 4); //Senden der Länge/Größe des Textes
-            _clientStream.Write(packetBytes, 0, packetBytes.Length); //Senden der eingentlichen Daten/des Textes   
+            ClientStream.Write(lengthBytes, 0, 4); //Senden der Länge/Größe des Textes
+            ClientStream.Write(packetBytes, 0, packetBytes.Length); //Senden der eingentlichen Daten/des Textes   
         }        
     }
 }

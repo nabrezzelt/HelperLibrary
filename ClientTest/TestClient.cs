@@ -2,13 +2,14 @@
 using HelperLibrary.Networking.ClientServer;
 using HelperLibrary.Networking.ClientServer.Packets;
 using System;
+using HelperLibrary.Logging;
 using PacketLibrary;
 
 namespace ClientDemo
 {
     class TestClient
     {
-        private static Client _client;
+        private static SslClient _client;
         private static string _uid;
 
         private static void Main(string[] args)
@@ -17,7 +18,8 @@ namespace ClientDemo
             Console.Write("Set your Uid: ");
             _uid = Console.ReadLine();
 
-            _client = new Client();
+
+            _client = new SslClient(NetworkUtilities.GetThisIPv4Adress(), true);
 
             _client.ConnectionLost += OnConnectionLost;
             _client.ConnectionSucceed += OnConnectionSucceed;
@@ -33,12 +35,23 @@ namespace ClientDemo
 
             //Switch over all diffrent PacketTypes and handle them:
             switch (packet)
-            {
-                case BasePacket p:
-                    Console.WriteLine("Packet is BasePacket");
-                    //OnBasePacketReceived(p)
+            {                
+                case AuthenticationResultPacket p:
+                    if (p.Result == AuthenticationResult.Ok)
+                    {
+                        Log.Info("Authentication succeed");
+                    }
+                    else
+                    {
+                        Log.Warn("Authentication failed");
+                                
+                    }
                     break;
-                
+
+                case BasePacket p:
+                    Console.WriteLine("Packet is BasePacket");                    
+                    break;
+
                 default:
                     Console.WriteLine("Unhandled Packet");
                     break;

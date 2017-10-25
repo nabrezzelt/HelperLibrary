@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthenticationPacket.cs" />
+    <Compile Include="AuthenticationResult.cs" />
+    <Compile Include="AuthenticationResultPacket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
 using HelperLibrary.Networking.ClientServer;
 using HelperLibrary.Networking.ClientServer.Packets;
 using PacketLibrary;
@@ -12,7 +13,7 @@ namespace ServerDemo
 
         static void Main(string[] args)
         {
-            _server = new DrawingHammerServer(9999);
+            _server = new DrawingHammerServer(new X509Certificate2("certificate.pfx", "password", X509KeyStorageFlags.MachineKeySet), 9999);
 
             _server.ClientConnected += OnClientConnected;
             _server.PacketReceived += OnPacketReceived;
@@ -34,15 +35,13 @@ namespace ServerDemo
 
             //Switch over all different PacketTypes and handle them:
             switch (packet)
-            {                
+            {
                 case AuthenticationPacket p:
-                    Console.WriteLine("Packet is AuthenticationPacket");
-                    OnAuthenticationPacketReceived(e.SenderTcpClient, p);
+                    HandleAuthPacket(p, e.SenderTcpClient);
                     break;
 
                 case BasePacket p:
-                    Console.WriteLine("Packet is BasePacket");
-                    //OnBasePacketReceived(p)
+                    Console.WriteLine("Packet is BasePacket");                    
                     break;
 
                 default:
@@ -51,20 +50,20 @@ namespace ServerDemo
             }
         }
 
+        private static void HandleAuthPacket(AuthenticationPacket authenticationPacket, TcpClient senderTcpClient)
+        {
+            Console.WriteLine("Clients count {0}", _server.Clients.Count);
+
+            string clientUid = authenticationPacket.SenderUid;
+
+            var connectedClient = _server.GetClientByTcpClient(senderTcpClient);
+            connectedClient.Uid = clientUid;
+            Console.WriteLine("Client with {0} authenticated with UID: {1}", senderTcpClient.Client.RemoteEndPoint, clientUid);
+        }
+
         private static void OnClientDisconnected(object sender, ClientDisconnectedEventArgs e)
         {
             Console.WriteLine("Client disconncted with uid: " + e.ClientUid);
-        }
-
-        private static void OnAuthenticationPacketReceived(TcpClient senderTcpClient, AuthenticationPacket packet)
-        {
-            //Zuordnen der UID des Connection-Objekts von dem das Paket kommt.
-            DrawingHammerClient client = (DrawingHammerClient) _server.GetClientByUid(senderTcpClient);
-
-            client.Uid = packet.SenderUid;
-            client.Authenticated = true;
-
-            Console.WriteLine("Client authenticated with UID: " + client.Uid);
-        }
+        }       
     }
 }
