@@ -118,7 +118,7 @@ namespace HelperLibrary.Logging
 
             // Display the properties of the client's certificate.
             X509Certificate remoteCertificate = stream.RemoteCertificate;
-            if (stream.RemoteCertificate != null)
+            if (remoteCertificate != null)
             {
                 Console.WriteLine("Remote cert was issued to {0} and is valid from {1} until {2}.",
                     remoteCertificate.Subject, remoteCertificate.GetEffectiveDateString(),

@@ -1,10 +1,9 @@
-﻿using System;
+﻿using HelperLibrary.Logging;
+using System;
 using System.Net.Security;
-using HelperLibrary.Logging;
 using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace HelperLibrary.Networking.ClientServer
 {
@@ -29,7 +28,7 @@ namespace HelperLibrary.Networking.ClientServer
                 var client = HandleNewConnectedClient(connectedClient, sslStream);
                 
                 Clients.Add(client);                
-                base.OnClientConnected(new ClientConnectedEventArgs(client));
+                OnClientConnected(new ClientConnectedEventArgs(client));
                 Log.Info("New Client connected (IP: " + connectedClient.Client.RemoteEndPoint + ")");
             }
         }

@@ -40,6 +40,7 @@ namespace HelperLibrary.Networking.ClientServer
                     Log.Info("Trying to connect to server at " + ServerIP + " on port " + Port + "...");
 
                     TcpClient.Connect(new IPEndPoint(ServerIP, Port));
+                    ClientStream = TcpClient.GetStream();
 
                     Log.Info("Connected");
                 }
@@ -59,9 +60,7 @@ namespace HelperLibrary.Networking.ClientServer
         }
 
         private void HandleIncommingData()
-        {
-            ClientStream = TcpClient.GetStream();
-
+        {            
             try
             {
                 byte[] buffer; //Daten
@@ -88,7 +87,7 @@ namespace HelperLibrary.Networking.ClientServer
             catch (IOException ex)
             {
                 Log.Info(ex.Message);
-                Log.Info("Server disconnected!");
+                Log.Info("Server connection lost!");
                 ConnectionLost?.Invoke(this, EventArgs.Empty);
             }
         }

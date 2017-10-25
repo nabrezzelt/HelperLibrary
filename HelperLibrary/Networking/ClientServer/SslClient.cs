@@ -12,12 +12,12 @@ namespace HelperLibrary.Networking.ClientServer
     public class SslClient : Client
     {
         private readonly string _serverName;
-        private readonly bool _trustSelfGeneratedCertificated;
+        //private readonly bool _trustSelfGeneratedCertificated;
 
-        public SslClient(string serverName, bool trustSelfGeneratedCertificated = false)
+        public SslClient(string serverName/*, bool trustSelfGeneratedCertificated = false*/)
         {
             _serverName = serverName;
-            _trustSelfGeneratedCertificated = trustSelfGeneratedCertificated;
+            //_trustSelfGeneratedCertificated = trustSelfGeneratedCertificated;
         }
 
         protected override void ConnectToServer()
@@ -51,7 +51,7 @@ namespace HelperLibrary.Networking.ClientServer
             // The server name must match the name on the server certificate.
             try
             {
-                sslStream.AuthenticateAsClient(serverName, null, SslProtocols.Tls, false);
+                sslStream.AuthenticateAsClient(serverName);
             }
             catch (AuthenticationException e)
             {
@@ -66,11 +66,9 @@ namespace HelperLibrary.Networking.ClientServer
         }
 
         private bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-        {
-            String rootCAThumbprint = "11922B9F6E9E2D654B84C4C70D4120CCE6458292"; // write your code to get your CA's thumbprint
-
+        {            
             // remove this line if commercial CAs are not allowed to issue certificate for your service.
-            if ((sslPolicyErrors & (SslPolicyErrors.None)) > 0)
+            if ((sslPolicyErrors & SslPolicyErrors.None) > 0)
             {
                 return true;
             }
@@ -81,13 +79,6 @@ namespace HelperLibrary.Networking.ClientServer
                 
             }
 
-            //// get last chain element that should contain root CA certificate
-            //// but this may not be the case in partial chains
-            //X509Certificate2 projectedRootCert = chain.ChainElements[chain.ChainElements.Count - 1].Certificate;
-            //if (projectedRootCert.Thumbprint != rootCAThumbprint)
-            //{
-            //    return false;
-            //}
             // execute certificate chaining engine and ignore only "UntrustedRoot" error
             X509Chain customChain = new X509Chain
             {
@@ -99,41 +90,6 @@ namespace HelperLibrary.Networking.ClientServer
             // RELEASE unmanaged resources behind X509Chain class.
             customChain.Reset();
             return retValue;
-
-
-            //if (sslPolicyErrors == SslPolicyErrors.None)
-            //{                
-            //    return true;
-            //}          
-
-            //////If certificate is selfgenerated trust it (and hope its encrypted :D)
-            ////if (_trustSelfGeneratedCertificated && sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors)
-            ////{
-            ////    return true;
-            ////}
-
-            //Console.WriteLine("Certificate error: {0}", sslPolicyErrors);
-
-            //// Do not allow this client to communicate with unauthenticated servers.
-            //return false;
-        }
-
-        public override void SendPacketToServer(BasePacket packet)
-        {
-            //ToDo: Überprüfen warum er hier einen NetworkStream (wird auch in der ganzen Klasse verwendet?!?! K.a. wieso...) verwendet und kein SslStream
-            //-> könnte problem mit der Schließenden Connection lösen vom Server.
-            var stream = (SslStream) ClientStream;
-
-            if (!TcpClient.Connected)
-                throw new InvalidOperationException("You're not connected!");
-
-            byte[] packetBytes = BasePacket.Serialize(packet);
-
-            var length = packetBytes.Length;
-            var lengthBytes = BitConverter.GetBytes(length);
-
-            stream.Write(lengthBytes, 0, 4); //Senden der Länge/Größe des Textes
-            stream.Write(packetBytes, 0, packetBytes.Length); //Senden der eingentlichen Daten/des Textes               
-        }
+        }       
     }    
 }
