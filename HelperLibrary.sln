@@ -5,13 +5,13 @@ VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelperLibrary", "HelperLibrary\HelperLibrary.csproj", "{3922E085-3615-422B-B706-EF8ADDEAE830}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientDemo", "ClientTest\ClientDemo.csproj", "{BB0C01CC-C39B-47D8-9BA0-DC4D2AFF3212}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientDemo", "Demos\ClientTest\ClientDemo.csproj", "{BB0C01CC-C39B-47D8-9BA0-DC4D2AFF3212}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerDemo", "ServerTest\ServerDemo.csproj", "{E29462D5-9B50-4370-B68C-6CDE1B8CCA11}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerDemo", "Demos\ServerTest\ServerDemo.csproj", "{E29462D5-9B50-4370-B68C-6CDE1B8CCA11}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{A6B2272F-7307-4A79-8BCB-DE5354E7D0D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketLibrary", "PacketLibrary\PacketLibrary.csproj", "{CEF6B5C8-2E50-4A35-B6FE-EDBD5FB379AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketLibrary", "Demos\PacketLibrary\PacketLibrary.csproj", "{CEF6B5C8-2E50-4A35-B6FE-EDBD5FB379AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

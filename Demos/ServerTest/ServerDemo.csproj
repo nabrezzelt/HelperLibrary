@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BB0C01CC-C39B-47D8-9BA0-DC4D2AFF3212}</ProjectGuid>
+    <ProjectGuid>{E29462D5-9B50-4370-B68C-6CDE1B8CCA11}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>ClientDemo</RootNamespace>
-    <AssemblyName>ClientDemo</AssemblyName>
+    <RootNamespace>ServerDemo</RootNamespace>
+    <AssemblyName>ServerDemo</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -42,14 +42,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TestClient.cs" />
+    <Compile Include="DrawingHammerClient.cs" />
+    <Compile Include="TestApplicationServer.cs" />
+    <Compile Include="DrawingHammerServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HelperLibrary\HelperLibrary.csproj">
+    <ProjectReference Include="..\..\HelperLibrary\HelperLibrary.csproj">
       <Project>{3922E085-3615-422B-B706-EF8ADDEAE830}</Project>
       <Name>HelperLibrary</Name>
     </ProjectReference>

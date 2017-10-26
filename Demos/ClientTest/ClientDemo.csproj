@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CEF6B5C8-2E50-4A35-B6FE-EDBD5FB379AA}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PacketLibrary</RootNamespace>
-    <AssemblyName>PacketLibrary</AssemblyName>
+    <ProjectGuid>{BB0C01CC-C39B-47D8-9BA0-DC4D2AFF3212}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>ClientDemo</RootNamespace>
+    <AssemblyName>ClientDemo</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -40,15 +42,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuthenticationPacket.cs" />
-    <Compile Include="AuthenticationResult.cs" />
-    <Compile Include="AuthenticationResultPacket.cs" />
+    <Compile Include="TestClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HelperLibrary\HelperLibrary.csproj">
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\HelperLibrary\HelperLibrary.csproj">
       <Project>{3922E085-3615-422B-B706-EF8ADDEAE830}</Project>
       <Name>HelperLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PacketLibrary\PacketLibrary.csproj">
+      <Project>{CEF6B5C8-2E50-4A35-B6FE-EDBD5FB379AA}</Project>
+      <Name>PacketLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
