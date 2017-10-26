@@ -374,9 +374,8 @@ namespace HelperLibrary.Database
                     return bindedQuery.Replace(entry.Key, ((double)entry.Value).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture));
                 }
 
-                if (entry.Value is DateTime)
+                if (entry.Value is DateTime val)
                 {
-                    DateTime val = (DateTime)entry.Value;
                     return bindedQuery.Replace(entry.Key, "\"" + val.ToString("yyyy-MM-dd hh:mm:ss") + "\"");
                 }
             }

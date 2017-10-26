@@ -8,9 +8,10 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>ClientDemo</RootNamespace>
     <AssemblyName>ClientDemo</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -54,7 +55,7 @@
       <Name>HelperLibrary</Name>
     </ProjectReference>
     <ProjectReference Include="..\PacketLibrary\PacketLibrary.csproj">
-      <Project>{CEF6B5C8-2E50-4A35-B6FE-EDBD5FB379AA}</Project>
+      <Project>{cef6b5c8-2e50-4a35-b6fe-edbd5fb379aa}</Project>
       <Name>PacketLibrary</Name>
     </ProjectReference>
   </ItemGroup>
