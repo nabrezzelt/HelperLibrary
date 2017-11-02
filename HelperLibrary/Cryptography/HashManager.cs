@@ -111,17 +111,31 @@ namespace HelperLibrary.Cryptography
             return Encoding.UTF8.GetBytes(text);
         }
 
-        public static string GenerateSecureRandomToken()
+        public static string GenerateSecureRandomToken(int bytes = 32, bool includeGUID = true)
         {
             using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
             {
-                byte[] tokenData = new byte[16];
+                StringBuilder randomToken = new StringBuilder();
+                byte[] tokenData;
+
+                if (includeGUID)
+                {
+                    tokenData = new byte[16];
+                    rng.GetBytes(tokenData);
+
+                    byte[] randomGUID = new Guid(tokenData).ToByteArray();
+                    randomToken.Append(Convert.ToBase64String(randomGUID));
+                }
+
+                tokenData = new byte[bytes];
                 rng.GetBytes(tokenData);
 
-                byte[] randomGUID = new Guid(tokenData).ToByteArray();
-
-                string base64String = Convert.ToBase64String(randomGUID).Replace("==", String.Empty) + Convert.ToBase64String(tokenData);
-                return base64String.Replace("+", String.Empty).Replace("/", String.Empty);                
+                randomToken.Append(Convert.ToBase64String(tokenData));
+                
+                return randomToken.ToString()
+                    .Replace("=", String.Empty)
+                    .Replace("+", String.Empty)
+                    .Replace("/", String.Empty);                
             }                       
         }
     }
