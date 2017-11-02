@@ -1,13 +1,13 @@
 ﻿using HelperLibrary.Database.Exceptions;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Text.RegularExpressions;
 
 namespace HelperLibrary.Database
 {
-    public class  MySQLDatabaseManager
+    public class MySQLDatabaseManager
     {
         #region Singleton
         private static MySQLDatabaseManager _instance;
@@ -24,8 +24,8 @@ namespace HelperLibrary.Database
         }
         #endregion
 
-        private readonly SqlConnection _connection;
-        private SqlCommand _prepareSQLCommand;
+        private readonly MySqlConnection _connection;
+        private MySqlCommand _prepareSQLCommand;
         private Dictionary<string, object> _bindedParams = new Dictionary<string, object>();
 
         public delegate void OnSQLQueryExcecuted(object sender, SQLQueryEventArgs e);
@@ -37,26 +37,28 @@ namespace HelperLibrary.Database
 
         private MySQLDatabaseManager()
         {
-            _connection = new SqlConnection();
+            _connection = new MySqlConnection();
         }
 
         /// <summary>
         /// Sets the connection string to login at the database.
         /// </summary>
-        /// <param name="host">Host-Address of the Database</param>
-        /// <param name="user">Use^^rname</param>
+        /// <param name="host">Host-Adress of the Database</param>
+        /// <param name="user">Username</param>
         /// <param name="password">Password</param>
         /// <param name="database">Databasename</param>
-        /// <param name="port">Port for Databaseconnection (Default: 3306)</param>
-        public void SetConnectionString(string host, string user, string password, string database, int port = 3306)
+        public void SetConnectionString(string host, string user, string password, string database)
         {
-            string connectionString = "Server=" + host + ";" +
-                                      "Port=" + port + ";" +
-                                      "Database=" + database + ";" +
-                                      "uid=" + user + ";" +
-                                      "pwd=" + password + ";";
+            MySqlConnectionStringBuilder connectionBuilder = new MySqlConnectionStringBuilder
+            {
+                Server = host,
+                UserID = user,
+                Password = password,
+                Database = database
+            };
 
-            _connection.ConnectionString = connectionString;
+
+            _connection.ConnectionString = connectionBuilder.ToString();
             _isConnectionStringSet = true;
         }
 
@@ -77,7 +79,7 @@ namespace HelperLibrary.Database
                 _connection.Open();
                 ConnectionSuccessful?.Invoke(this, new EventArgs());
             }
-            catch (SqlException e)
+            catch (MySqlException e)
             {
                 throw new CouldNotConnectException("Could not connect to Database!", e);
             }
@@ -134,13 +136,13 @@ namespace HelperLibrary.Database
         /// <returns>Result of the Query.</returns>
         /// <exception cref="SQLQueryFailException" />
         /// <exception cref="QueryNotPreparedException" />
-        public SqlDataReader ExecutePreparedSelect()
+        public MySqlDataReader ExecutePreparedSelect()
         {
             if (_prepareSQLCommand == null) throw new QueryNotPreparedException();
 
             try
             {
-                SqlDataReader reader = _prepareSQLCommand.ExecuteReader();
+                MySqlDataReader reader = _prepareSQLCommand.ExecuteReader();
                 SQLQueryExcecuted?.Invoke(this, new SQLQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SQLQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
 
                 return reader;
@@ -171,7 +173,7 @@ namespace HelperLibrary.Database
                     _prepareSQLCommand.ExecuteNonQuery();
                     SQLQueryExcecuted?.Invoke(this, new SQLQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SQLQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
                 }
-                catch (SqlException e)
+                catch (MySqlException e)
                 {
                     throw new SQLQueryFailException("SQL-Query failed", ReplacePlaceholderInPreparedQuery(), e);
                 }
@@ -194,7 +196,7 @@ namespace HelperLibrary.Database
                 Connect();
             }
 
-            SqlCommand cmd = _connection.CreateCommand();
+            MySqlCommand cmd = _connection.CreateCommand();
             cmd.CommandText = query;
 
 
@@ -203,7 +205,7 @@ namespace HelperLibrary.Database
                 cmd.ExecuteNonQuery();
                 SQLQueryExcecuted?.Invoke(this, new SQLQueryEventArgs(query, SQLQueryEventArgs.QueryType.InsertUpdateDelete));
             }
-            catch (SqlException e)
+            catch (MySqlException e)
             {
 
                 throw new SQLQueryFailException("SQL-Query failed!", query, e);
@@ -214,16 +216,16 @@ namespace HelperLibrary.Database
         /// Executes a given SQL-Query that return Rows.
         /// </summary>
         /// <param name="query">Query to execute.</param>
-        public SqlDataReader Select(string query)
+        public MySqlDataReader Select(string query)
         {
             if (!IsConnected())
             {
                 Connect();
             }
 
-            SqlDataReader reader;
+            MySqlDataReader reader;
 
-            SqlCommand cmd = _connection.CreateCommand();
+            MySqlCommand cmd = _connection.CreateCommand();
             cmd.CommandText = query;
 
             try
@@ -231,7 +233,7 @@ namespace HelperLibrary.Database
                 reader = cmd.ExecuteReader();
                 SQLQueryExcecuted?.Invoke(this, new SQLQueryEventArgs(query, SQLQueryEventArgs.QueryType.Select));
             }
-            catch (SqlException e)
+            catch (MySqlException e)
             {
                 throw new SQLQueryFailException("SQL-Query failed!", query, e);
             }
@@ -250,7 +252,7 @@ namespace HelperLibrary.Database
                 Connect();
             }
 
-            SqlDataReader reader = _instance.Select("SELECT LAST_INSERT_ID()");
+            MySqlDataReader reader = _instance.Select("SELECT LAST_INSERT_ID()");
             reader.Read();
 
             int id = reader.GetInt32(0);
@@ -294,32 +296,27 @@ namespace HelperLibrary.Database
         /// <summary>
         /// Test if connection is possible with given login-data.
         /// </summary>
-        /// <param name="host">Host-Address of the Database</param>
+        /// <param name="server">Address of Database</param>
         /// <param name="database">Database-Name</param>
         /// <param name="user">Username</param>
-        /// <param name="password">Password</param>
-        /// <param name="port">Port for Databaseconnection (Default: 3306)</param>
+        /// <param name="passwd">Password</param>
         /// <returns>True if the Connectionw as successful or throw a <see cref="CouldNotConnectException"/>.</returns>
         /// <exception cref="CouldNotConnectException" />
-        public static bool TestDatabaseConnection(string host, string user, string password, string database, int port = 3306)
+        public static bool TestDatabaseConnection(string server, string database, string user, string passwd)
         {
-            var connectionString = "Server=" + host + ";" +
-                                   "Port=" + port + ";" +
-                                   "Database=" + database + ";" +
-                                   "uid=" + user + ";" +
-                                   "pwd=" + password + ";";
-            SqlConnection conn = null;
+            var connectionString = "Server=" + server + ";Port=3306;Database=" + database + ";uid=" + user + ";pwd=" + passwd + ";";
+            MySqlConnection conn = null;
             try
             {
-                conn = new SqlConnection(connectionString);
+                conn = new MySqlConnection(connectionString);
                 conn.Open();
             }
             catch (ArgumentException ex)
             {
                 throw new CouldNotConnectException("Connection Failed!", ex);
             }
-            catch (SqlException ex)
-            {                
+            catch (MySqlException ex)
+            {
                 switch (ex.Number)
                 {
                     //http://dev.mysql.com/doc/refman/5.0/en/error-messages-server.html

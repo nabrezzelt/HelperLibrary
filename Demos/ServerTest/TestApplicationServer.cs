@@ -13,7 +13,7 @@ namespace ServerDemo
 
         static void Main(string[] args)
         {
-            _server = new DrawingHammerServer(new X509Certificate2("certificate.pfx", "password", X509KeyStorageFlags.MachineKeySet), 9999);
+            _server = new DrawingHammerServer(new X509Certificate2("certificate.pfx", "password"), 9999);
 
             _server.ClientConnected += OnClientConnected;
             _server.PacketReceived += OnPacketReceived;

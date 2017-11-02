@@ -25,6 +25,8 @@ namespace HelperLibrary.Networking.ClientServer
         /// </summary>
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
 
+        public bool IsConnected { get; set; }
+
         protected IPAddress ServerIP;
         protected int Port;
         protected TcpClient TcpClient;
@@ -64,6 +66,7 @@ namespace HelperLibrary.Networking.ClientServer
                     TcpClient.Connect(new IPEndPoint(ServerIP, Port));
                     ClientStream = TcpClient.GetStream();
 
+                    IsConnected = true;
                     Log.Info("Connected");
                 }
                 catch (Exception e)
@@ -71,7 +74,7 @@ namespace HelperLibrary.Networking.ClientServer
                     Log.Error(e.Message + Environment.NewLine);                                        
                 }                
             }
-        }
+        }        
 
         private void StartReceivingData()
         {

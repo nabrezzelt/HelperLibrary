@@ -37,6 +37,8 @@ namespace HelperLibrary.Networking.ClientServer
                     TcpClient.Connect(new IPEndPoint(ServerIP, Port));
                     InitializeSslConnection(_serverName);
                     Log.SslStreamInformation((SslStream) ClientStream);
+
+                    IsConnected = true;
                     Log.Info("Connected");
                 }
                 catch (AuthenticationException)
