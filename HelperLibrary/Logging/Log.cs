@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 
@@ -55,10 +56,14 @@ namespace HelperLibrary.Logging
 
         public static void ClearCurrentConsoleLine()
         {
-            var currentLineCursor = Console.CursorTop;
-            Console.SetCursorPosition(0, Console.CursorTop);
-            Console.Write(new string(' ', Console.WindowWidth));
-            Console.SetCursorPosition(0, currentLineCursor);
+            try
+            {
+                var currentLineCursor = Console.CursorTop;
+                Console.SetCursorPosition(0, Console.CursorTop);
+                Console.Write(new string(' ', Console.WindowWidth));
+                Console.SetCursorPosition(0, currentLineCursor);
+            }
+            catch (IOException) { }
         }
 
         #region SslStream logging

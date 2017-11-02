@@ -88,26 +88,30 @@ namespace HelperLibrary.Networking.ClientServer
         {            
             try
             {
-                byte[] buffer; //Daten
-                byte[] dataSize = new byte[4]; //Länge
-
-                int readBytes = ClientStream.Read(dataSize, 0, 4);
-
-                while (readBytes != 4)
+                while (true)
                 {
-                    readBytes += ClientStream.Read(dataSize, readBytes, 4 - readBytes);
-                }
-                var contentLength = BitConverter.ToInt32(dataSize, 0);
+                    byte[] buffer; //Daten
+                    byte[] dataSize = new byte[4]; //Länge
 
-                buffer = new byte[contentLength];
-                readBytes = 0;
-                while (readBytes != buffer.Length)
-                {
-                    readBytes += ClientStream.Read(buffer, readBytes, buffer.Length - readBytes);
-                }
+                    int readBytes = ClientStream.Read(dataSize, 0, 4);
 
-                //Daten sind im Buffer-Array gespeichert
-                PacketReceived?.Invoke(this, new PacketReceivedEventArgs(BasePacket.Deserialize(buffer), TcpClient));
+                    while (readBytes != 4)
+                    {
+                        readBytes += ClientStream.Read(dataSize, readBytes, 4 - readBytes);
+                    }
+                    var contentLength = BitConverter.ToInt32(dataSize, 0);
+
+                    buffer = new byte[contentLength];
+                    readBytes = 0;
+                    while (readBytes != buffer.Length)
+                    {
+                        readBytes += ClientStream.Read(buffer, readBytes, buffer.Length - readBytes);
+                    }
+
+                    //Daten sind im Buffer-Array gespeichert
+                    PacketReceived?.Invoke(this,
+                        new PacketReceivedEventArgs(BasePacket.Deserialize(buffer), TcpClient));
+                }                
             }
             catch (IOException ex)
             {

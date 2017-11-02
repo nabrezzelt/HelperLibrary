@@ -68,18 +68,19 @@ namespace HelperLibrary.Networking.ClientServer
         /// Starts the server on given IP and port.
         /// </summary>
         public void Start()
-        {            
+        {
             Thread listenForNewClients = new Thread(ListenOnNewClients);
             listenForNewClients.Start();
+
+            Log.Info("Server started.");
+            Log.Info("Waiting for new client connections...");
         }
 
         protected void InitializeListener()
         {
-            Log.Info("Starting server on " + NetworkUtilities.GetThisIPv4Adress() + " on port " + Port);
+            Log.Info("Configured server for " + NetworkUtilities.GetThisIPv4Adress() + " on port " + Port);
 
             Listener = new TcpListener(new IPEndPoint(IPAddress.Parse(NetworkUtilities.GetThisIPv4Adress()), Port));
-
-            Log.Info("Server started. Waiting for new Client connections...");
         }
 
         protected virtual void ListenOnNewClients()
@@ -94,7 +95,7 @@ namespace HelperLibrary.Networking.ClientServer
 
                 Clients.Add(client);                
                 OnClientConnected(new ClientConnectedEventArgs(client));
-                Log.Info("New Client connected (IP: " + connectedClient.Client.RemoteEndPoint + ")");
+                Log.Info("New client connected (IP: " + connectedClient.Client.RemoteEndPoint + ")");
             }                        
         }
         
