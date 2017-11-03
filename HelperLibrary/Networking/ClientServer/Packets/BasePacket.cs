@@ -38,18 +38,6 @@ namespace HelperLibrary.Networking.ClientServer.Packets
             ms.Close();
 
             return packet;
-        }
-
-        public enum BasePacketType
-        {
-            Authentication,
-            ClientConnection,
-            List,
-            Playlist,
-            PlaylistHandling,
-            File,
-            ClientState,
-            ClientControlling
-        }
+        }        
     }
 }
