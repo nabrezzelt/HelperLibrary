@@ -63,7 +63,7 @@
     <Compile Include="Networking\ClientServer\ClientDisconnectedEventArgs.cs" />
     <Compile Include="Networking\ClientServer\Exceptions\ConnectionFailedException.cs" />
     <Compile Include="Networking\ClientServer\PackageReceivedEventArgs.cs" />
-    <Compile Include="Networking\ClientServer\Packages\BasePackage.cs" />
+    <Compile Include="Networking\ClientServer\BasePackage.cs" />
     <Compile Include="Networking\ClientServer\Router.cs" />
     <Compile Include="Networking\ClientServer\Server.cs" />
     <Compile Include="Networking\ClientServer\SslClient.cs" />
