@@ -1,6 +1,6 @@
 # HelperLibrary
 
-HelperLibrary is a small library for:
+HelperLibrary is a library for:
 
 - diffrent types of `hashing`
 - creation and en-/decryption with `RSA-Key-Pairs`
