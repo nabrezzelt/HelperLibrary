@@ -11,7 +11,7 @@ namespace HelperLibrary.Networking.ClientServer
 {
     public abstract class Server
     {
-        protected readonly Router Router;
+        public readonly Router Router;
         protected TcpListener Listener;
         protected readonly int Port;
 
