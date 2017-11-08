@@ -1,5 +1,5 @@
 ﻿using HelperLibrary.Logging;
-using HelperLibrary.Networking.ClientServer.Packets;
+using HelperLibrary.Networking.ClientServer.Packages;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,12 +11,16 @@ namespace HelperLibrary.Networking.ClientServer
 {
     public abstract class Server
     {
-        public readonly Router Router;
-        protected TcpListener Listener;
-        protected readonly int Port;
+        /// <summary>
+        /// Used for sending and disritution of packages.
+        /// </summary>
+        public Router Router { get; set; }
+        protected TcpListener Listener { get; set; }
+        protected IPAddress Ip { get; }
+        protected int Port { get; }
 
         /// <summary>
-        /// List containing all clients.
+        /// List of all connected clients.
         /// </summary>
         public List<BaseClientData> Clients { get; } = new List<BaseClientData>();
 
@@ -32,9 +36,9 @@ namespace HelperLibrary.Networking.ClientServer
         public event EventHandler<ClientDisconnectedEventArgs> ClientDisconnected;
 
         /// <summary>
-        /// Fired when a packet is received by any client.
+        /// Fired when a package is received by any client.
         /// </summary>
-        public event EventHandler<PacketReceivedEventArgs> PacketReceived;
+        public event EventHandler<PackageReceivedEventArgs> PackageReceived;
 
         protected void OnClientConnected(ClientConnectedEventArgs e)
         {
@@ -46,18 +50,36 @@ namespace HelperLibrary.Networking.ClientServer
             ClientDisconnected?.Invoke(this, e);
         }
 
-        protected void OnPacketReceived(object sender, PacketReceivedEventArgs e)
+        protected void OnPackageReceived(object sender, PackageReceivedEventArgs e)
         {
-            PacketReceived?.Invoke(sender, e);
+            PackageReceived?.Invoke(sender, e);
         }
         #endregion
 
         /// <summary>
-        /// Initalize a new Server on a given port.
+        /// Initalizes a new Server on a given port and IP address.
         /// </summary>
+        /// <param name="ip"></param>
         /// <param name="port"></param>
-        protected Server(int port)
+        protected Server(IPAddress ip, int port)
         {
+            Ip = ip;
+            Port = port;
+            Router = new Router(this);
+
+            InitializeListener();
+        }
+
+        /// <inheritdoc cref="Server(IPAddress, int)"/> 
+        /// <exception cref="InvalidOperationException">Exception is thrown when IP address could not be parsed.</exception>      
+        protected Server(string ip, int port)
+        {
+            if (!IPAddress.TryParse(ip, out var validIP))
+            {
+                throw new InvalidOperationException($"IP address ({ip}) must be valid!");
+            }
+
+            Ip = validIP;
             Port = port;
             Router = new Router(this);
 
@@ -65,7 +87,7 @@ namespace HelperLibrary.Networking.ClientServer
         }
 
         /// <summary>
-        /// Starts the server on given IP and port.
+        /// Starts the server.
         /// </summary>
         public void Start()
         {
@@ -78,9 +100,9 @@ namespace HelperLibrary.Networking.ClientServer
 
         protected void InitializeListener()
         {
-            Log.Info("Configured server for " + NetworkUtilities.GetThisIPv4Adress() + " on port " + Port);
+            Log.Info("Configured server for " + Ip + " on port " + Port);
 
-            Listener = new TcpListener(new IPEndPoint(IPAddress.Parse(NetworkUtilities.GetThisIPv4Adress()), Port));
+            Listener = new TcpListener(new IPEndPoint(Ip, Port));
         }
 
         protected virtual void ListenOnNewClients()
@@ -98,8 +120,17 @@ namespace HelperLibrary.Networking.ClientServer
                 Log.Info("New client connected (IP: " + connectedClient.Client.RemoteEndPoint + ")");
             }                        
         }
-        
-        public abstract BaseClientData HandleNewConnectedClient(TcpClient connectedClient, Stream stream);
+
+        /// <summary>
+        /// Creates a new object to hold and handle packages. Override this method to define additional Properties (e.g. a score or a user object).
+        /// </summary>
+        /// <param name="connectedClient"></param>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public virtual BaseClientData HandleNewConnectedClient(TcpClient connectedClient, Stream stream)
+        {            
+            return new BaseClientData(this, connectedClient, stream);
+        }
 
         internal void DataIn(object clientData)
         {
@@ -128,14 +159,14 @@ namespace HelperLibrary.Networking.ClientServer
                     }
 
                     //Daten sind im Buffer-Array
-                    Router.DistributePacket((BasePacket)BasePacket.Deserialize(buffer), client.TcpClient);
+                    Router.DistributePackage((BasePackage)BasePackage.Deserialize(buffer), client.TcpClient);
                 }
             }            
             catch (IOException e)
             {
                 Log.Debug(e.ToString());
-                BaseClientData disconnectedClient = Router.GetClientFromList(client.TcpClient);
-                Log.Info("Client disconnected with UID: " + disconnectedClient.Uid);
+                BaseClientData disconnectedClient = GetClientFromClientList(client.TcpClient);
+                Log.Info("Client disconnected with Uid: " + disconnectedClient.Uid);
                 Clients.Remove(disconnectedClient);
                 Log.Info("Client removed from list.");
 
@@ -143,34 +174,68 @@ namespace HelperLibrary.Networking.ClientServer
             }
         }
 
-        /// <summary>
-        /// Handle
+        /// <summary>    
+        /// Handles packets who are sent to the server. 
         /// </summary>
-        /// <param name="packet"></param>
+        /// <param name="package"></param>
         /// <param name="senderTcpClient"></param>
-        public void HandleIncommingData(BasePacket packet, TcpClient senderTcpClient)
+        public void HandleIncommingData(BasePackage package, TcpClient senderTcpClient)
         {
-            OnPacketReceived(senderTcpClient, new PacketReceivedEventArgs(packet, senderTcpClient));
+            OnPackageReceived(senderTcpClient, new PackageReceivedEventArgs(package, senderTcpClient));
+        }        
+
+        /// <summary>
+        /// Returns a connected client by his <see cref="TcpClient"/>.
+        /// </summary>
+        /// <param name="tcpClient"><see cref="TcpClient"/> of the client.</param>
+        /// <returns>Returns the found client. If no client is found, null is returned.</returns>
+        public BaseClientData GetClientFromClientList(TcpClient tcpClient)
+        {
+            foreach (BaseClientData client in Clients)
+            {
+                if (client.TcpClient == tcpClient)
+                {
+                    return client;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
-        /// Get a registred client by uid.
+        /// Returns a connected client with the given uid.
         /// </summary>
-        /// <param name="clientUid">Uid of the client</param>
-        /// <returns></returns>
-        public BaseClientData GetClientByUid(string clientUid)
+        /// <param name="clientUid">Client Uid</param>
+        /// <returns>Returns the found client. If no client is found, null is returned.</returns>
+        public BaseClientData GetClientFromClientList(string clientUid)
         {
-            return Router.GetClientFromList(clientUid);
+            foreach (BaseClientData client in Clients)
+            {
+                if (client.Uid == clientUid)
+                {
+                    return client;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
-        /// Get a connected client by connection.
+        /// Checks if a client with this Uid exists.
         /// </summary>
-        /// <param name="tcpClient"></param>
-        /// <returns></returns>
-        public BaseClientData GetClientByTcpClient(TcpClient tcpClient)
+        /// <param name="uid">Client Uid</param>
+        /// <returns>True if Client exists, False if the client does not exists</returns>
+        public bool ClientUidExists(string uid)
         {
-            return Router.GetClientFromList(tcpClient);
+            foreach (BaseClientData client in Clients)
+            {
+                if (client.Uid == uid)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

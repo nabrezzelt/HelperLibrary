@@ -75,7 +75,15 @@ namespace HelperLibrary.Networking.ClientServer
             }            
         }
 
-        private bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        /// <summary>
+        /// Validates the certificate when <see cref="SslStream"/>.AuthenticateAsClient() is called.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="certificate"></param>
+        /// <param name="chain"></param>
+        /// <param name="sslPolicyErrors"></param>
+        /// <returns>True when the certificate is valid, False when the certificate is invalid.</returns>
+        protected virtual bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
             if (_allowUntrustedRootCa)
             {

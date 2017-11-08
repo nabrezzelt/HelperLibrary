@@ -54,7 +54,7 @@
       <Project>{3922E085-3615-422B-B706-EF8ADDEAE830}</Project>
       <Name>HelperLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PacketLibrary\PacketLibrary.csproj">
+    <ProjectReference Include="..\PackageLibrary\PackageLibrary.csproj">
       <Project>{cef6b5c8-2e50-4a35-b6fe-edbd5fb379aa}</Project>
       <Name>PacketLibrary</Name>
     </ProjectReference>

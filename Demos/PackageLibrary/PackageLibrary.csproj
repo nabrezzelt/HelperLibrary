@@ -7,8 +7,8 @@
     <ProjectGuid>{CEF6B5C8-2E50-4A35-B6FE-EDBD5FB379AA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PacketLibrary</RootNamespace>
-    <AssemblyName>PacketLibrary</AssemblyName>
+    <RootNamespace>PackageLibrary</RootNamespace>
+    <AssemblyName>PackageLibrary</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -41,9 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuthenticationPacket.cs" />
+    <Compile Include="AuthenticationPackage.cs" />
     <Compile Include="AuthenticationResult.cs" />
-    <Compile Include="AuthenticationResultPacket.cs" />
+    <Compile Include="AuthenticationResultPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

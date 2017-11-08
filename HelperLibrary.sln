@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerDemo", "Demos\ServerT
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{A6B2272F-7307-4A79-8BCB-DE5354E7D0D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketLibrary", "Demos\PacketLibrary\PacketLibrary.csproj", "{CEF6B5C8-2E50-4A35-B6FE-EDBD5FB379AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageLibrary", "Demos\PackageLibrary\PackageLibrary.csproj", "{CEF6B5C8-2E50-4A35-B6FE-EDBD5FB379AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

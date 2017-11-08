@@ -1,5 +1,5 @@
 ﻿using HelperLibrary.Logging;
-using HelperLibrary.Networking.ClientServer.Packets;
+using HelperLibrary.Networking.ClientServer.Packages;
 using System;
 using System.IO;
 using System.Net;
@@ -21,9 +21,9 @@ namespace HelperLibrary.Networking.ClientServer
         public event EventHandler ConnectionLost;  
         
         /// <summary>
-        /// Fired when client receives a packet.
+        /// Fired when client receives a package.
         /// </summary>
-        public event EventHandler<PacketReceivedEventArgs> PacketReceived;
+        public event EventHandler<PackageReceivedEventArgs> PackageReceived;
 
         public bool IsConnected { get; set; }
 
@@ -47,7 +47,7 @@ namespace HelperLibrary.Networking.ClientServer
             ConnectionSucceed?.Invoke(this, EventArgs.Empty);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="Connect(IPAddress, int)"/>
         public void Connect(string serverIP, int port)
         {
             Connect(IPAddress.Parse(serverIP), port);
@@ -109,8 +109,8 @@ namespace HelperLibrary.Networking.ClientServer
                     }
 
                     //Daten sind im Buffer-Array gespeichert
-                    PacketReceived?.Invoke(this,
-                        new PacketReceivedEventArgs(BasePacket.Deserialize(buffer), TcpClient));
+                    PackageReceived?.Invoke(this,
+                        new PackageReceivedEventArgs(BasePackage.Deserialize(buffer), TcpClient));
                 }                
             }
             catch (IOException ex)
@@ -135,21 +135,21 @@ namespace HelperLibrary.Networking.ClientServer
         }
 
         /// <summary>
-        /// Send a packet to the server.
+        /// Send a package to the server.
         /// </summary>
-        /// <param name="packet">Packet to send</param>
-        public virtual void SendPacketToServer(BasePacket packet)
+        /// <param name="package">Package to send</param>
+        public void SendPackageToServer(BasePackage package)
         {
             if(!TcpClient.Connected)
                 throw new InvalidOperationException("You're not connected!");
 
-            byte[] packetBytes = BasePacket.Serialize(packet);
+            byte[] packageBytes = BasePackage.Serialize(package);
 
-            var length = packetBytes.Length;
+            var length = packageBytes.Length;
             var lengthBytes = BitConverter.GetBytes(length);            
 
             ClientStream.Write(lengthBytes, 0, 4); //Senden der Länge/Größe des Textes
-            ClientStream.Write(packetBytes, 0, packetBytes.Length); //Senden der eingentlichen Daten/des Textes   
+            ClientStream.Write(packageBytes, 0, packageBytes.Length); //Senden der eingentlichen Daten/des Textes   
         }        
     }
 }

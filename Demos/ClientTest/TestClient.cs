@@ -1,9 +1,9 @@
 ﻿using HelperLibrary.Networking;
 using HelperLibrary.Networking.ClientServer;
-using HelperLibrary.Networking.ClientServer.Packets;
+using HelperLibrary.Networking.ClientServer.Packages;
 using System;
 using HelperLibrary.Logging;
-using PacketLibrary;
+using PackageLibrary;
 
 namespace ClientDemo
 {
@@ -23,20 +23,20 @@ namespace ClientDemo
 
             _client.ConnectionLost += OnConnectionLost;
             _client.ConnectionSucceed += OnConnectionSucceed;
-            _client.PacketReceived += OnPacketReceived;
+            _client.PackageReceived += OnPackageReceived;
 
             _client.Connect(NetworkUtilities.GetThisIPv4Adress(), 9999);            
         }
 
-        private static void OnPacketReceived(object sender, PacketReceivedEventArgs e)
+        private static void OnPackageReceived(object sender, PackageReceivedEventArgs e)
         {
-            var packet = e.Packet;
-            Console.WriteLine("Packet recived of type: {0}", nameof(packet));
+            var package = e.Package;
+            Console.WriteLine("Package recived of type: {0}", nameof(package));
 
-            //Switch over all diffrent PacketTypes and handle them:
-            switch (packet)
+            //Switch over all diffrent PackageTypes and handle them:
+            switch (package)
             {                
-                case AuthenticationResultPacket p:
+                case AuthenticationResultPackage p:
                     if (p.Result == AuthenticationResult.Ok)
                     {
                         Log.Info("Authentication succeed");
@@ -48,12 +48,12 @@ namespace ClientDemo
                     }
                     break;
 
-                case BasePacket p:
-                    Console.WriteLine("Packet is BasePacket");                    
+                case BasePackage p:
+                    Console.WriteLine("Package is BasePackage");                    
                     break;
 
                 default:
-                    Console.WriteLine("Unhandled Packet");
+                    Console.WriteLine("Unhandled Package");
                     break;
             }
         }
@@ -64,7 +64,7 @@ namespace ClientDemo
 
             AuthenticateToServer();
 
-            Console.WriteLine("Authetication-Packet send");
+            Console.WriteLine("Authetication-Package send");
         }
 
         private static void OnConnectionLost(object sender, EventArgs e)
@@ -74,7 +74,7 @@ namespace ClientDemo
 
         private static void AuthenticateToServer()
         {
-            _client.SendPacketToServer(new AuthenticationPacket(_uid, Router.ServerWildcard));
+            _client.SendPackageToServer(new AuthenticationPackage(_uid, Router.ServerWildcard));
         }
     }
 }

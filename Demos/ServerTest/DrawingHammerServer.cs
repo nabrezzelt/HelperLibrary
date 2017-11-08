@@ -7,7 +7,7 @@ namespace ServerDemo
 {
     public class DrawingHammerServer : SslServer
     {
-        public DrawingHammerServer(X509Certificate2 certificate, int port) : base(certificate, port) { }
+        public DrawingHammerServer(X509Certificate2 certificate, string ip, int port) : base(certificate, ip, port) { }
 
         public override BaseClientData HandleNewConnectedClient(TcpClient connectedClient, Stream stream)
         {

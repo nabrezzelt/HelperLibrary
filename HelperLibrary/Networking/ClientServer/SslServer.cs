@@ -1,5 +1,6 @@
 ﻿using HelperLibrary.Logging;
 using System;
+using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Authentication;
@@ -12,11 +13,17 @@ namespace HelperLibrary.Networking.ClientServer
         private readonly X509Certificate2 _certificate;
 
         /// <summary>
-        /// Initialize a new <see cref="SslServer"/> with <see cref="X509Certificate2"/> and a given port.
+        /// Initializes a new <see cref="SslServer"/> with <see cref="X509Certificate2"/> on the given port and IP address.
         /// </summary>
-        /// <param name="certificate"></param>
-        /// <param name="port"></param>
-        protected SslServer(X509Certificate2 certificate, int port) : base(port)
+        /// <param name="certificate"><see cref="X509Certificate2"/> for authentication and encryption.</param>
+        /// <param name="ip">Ip to setup.</param>
+        /// <param name="port">Port to setup.</param>
+        protected SslServer(X509Certificate2 certificate, string ip, int port) : base(ip, port)
+        {
+            _certificate = certificate;
+        }
+
+        protected SslServer(X509Certificate2 certificate, IPAddress ip, int port) : base(ip, port)
         {
             _certificate = certificate;
         }

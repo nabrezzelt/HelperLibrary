@@ -3,14 +3,14 @@ using System.Net.Sockets;
 
 namespace HelperLibrary.Networking.ClientServer
 {
-    public class PacketReceivedEventArgs : EventArgs
+    public class PackageReceivedEventArgs : EventArgs
     {
-        public object Packet;
+        public object Package;
         public TcpClient SenderTcpClient;
 
-        public PacketReceivedEventArgs(object packet, TcpClient senderTcpClient)
+        public PackageReceivedEventArgs(object package, TcpClient senderTcpClient)
         {
-            Packet = packet;
+            Package = package;
             SenderTcpClient = senderTcpClient;
         }
     }

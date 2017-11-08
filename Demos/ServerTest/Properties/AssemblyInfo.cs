@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // Allgemeine Informationen über eine Assembly werden über die folgenden
@@ -8,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("ServerDemo")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("NSO")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ServerDemo")]
 [assembly: AssemblyCopyright("Copyright © NSO 2017")]
 [assembly: AssemblyTrademark("")]

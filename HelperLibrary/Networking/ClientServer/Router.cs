@@ -1,10 +1,10 @@
-﻿using HelperLibrary.Networking.ClientServer.Packets;
+﻿using HelperLibrary.Networking.ClientServer.Packages;
 using System.Net.Sockets;
 
 namespace HelperLibrary.Networking.ClientServer
 {
     /// <summary>
-    /// Router for packet distribution
+    /// Router for package handling and distribution.
     /// </summary>
     public class Router
     {
@@ -15,33 +15,37 @@ namespace HelperLibrary.Networking.ClientServer
 
         private readonly Server _serverInstance;
 
+        /// <summary>
+        /// Initializes a new Router for package handling and distribution.
+        /// </summary>
+        /// <param name="serverInstance">Serverinstance to handle packages where are sent to the server.</param>
         public Router(Server serverInstance)
         {
             _serverInstance = serverInstance;
-        }       
+        }
 
         /// <summary>
         /// Distributes a Packet to a Wildcard or a specific UID.
         /// </summary>
-        /// <param name="packet">Packet to distribute</param>
+        /// <param name="package">Packet to distribute</param>
         /// <param name="senderTcpClient">TcpClient-Object of the sender</param>
         /// <param name="excludedClients">Array of clients, where the packet is not distributed</param>
-        public void DistributePacket(BasePacket packet, TcpClient senderTcpClient, string[] excludedClients = null)
+        public void DistributePackage(BasePackage package, TcpClient senderTcpClient, string[] excludedClients = null)
         {
             if (excludedClients == null)
-                excludedClients = new string[] { };            
+                excludedClients = new string[] { };
 
-            switch (packet.DestinationUid)
+            switch (package.DestinationUid)
             {
                 case ServerWildcard:
-                    _serverInstance.HandleIncommingData(packet, senderTcpClient);
+                    _serverInstance.HandleIncommingData(package, senderTcpClient);
                     break;
 
                 case AllAuthenticatedWildCard:
                     foreach (BaseClientData client in _serverInstance.Clients)
                     {
                         if (client.Authenticated && !IsInArray(client.Uid, excludedClients))
-                            client.SendDataPacketToClient(packet);
+                            client.SendDataPackageToClient(package);
                     }
                     break;
 
@@ -49,7 +53,7 @@ namespace HelperLibrary.Networking.ClientServer
                     foreach (BaseClientData client in _serverInstance.Clients)
                     {
                         if (!client.Authenticated && !IsInArray(client.Uid, excludedClients))
-                            client.SendDataPacketToClient(packet);
+                            client.SendDataPackageToClient(package);
                     }
                     break;
 
@@ -57,38 +61,38 @@ namespace HelperLibrary.Networking.ClientServer
                     foreach (BaseClientData client in _serverInstance.Clients)
                     {
                         if (!IsInArray(client.Uid, excludedClients))
-                            client.SendDataPacketToClient(packet);
+                            client.SendDataPackageToClient(package);
                     }
                     break;
                 default:
-                    //Send to packet to DestinationUID
-                    GetClientFromList(packet.DestinationUid)?.SendDataPacketToClient(packet);
+                    //Send to package to DestinationUID
+                    _serverInstance.GetClientFromClientList(package.DestinationUid)?.SendDataPackageToClient(package);
                     break;
             }
         }
 
 
         /// <summary>
-        /// Distributes a Packet to a Wildcard or a specific UID.
+        /// Distributes a Package to a Wildcard or a specific UID.
         /// </summary>
-        /// <param name="packet">Packet to distribute</param>
-        public void DistributePacket(BasePacket packet)
+        /// <param name="package">Package to distribute</param>
+        public void DistributePackage(BasePackage package)
         {
-            DistributePacket(packet, null);
+            DistributePackage(package, null);
         }
 
         /// <summary>
-        /// Distributes a Packet to a Wildcard or a specific UID.
+        /// Distributes a Package to a Wildcard or a specific UID.
         /// </summary>
-        /// <param name="packet">Packet to distribute</param>
-        /// <param name="excludedClients">Array of clients, where the packet is not distributed</param>
-        public void DistributePacket(BasePacket packet, string[] excludedClients)
+        /// <param name="package">Package to distribute</param>
+        /// <param name="excludedClients">Array of clients, where the package is not distributed</param>
+        public void DistributePackage(BasePackage package, string[] excludedClients)
         {
-            DistributePacket(packet, null, excludedClients);
+            DistributePackage(package, null, excludedClients);
         }
         
         private static bool IsInArray(string uid, string[] uids)
-        {
+        {            
             foreach (string clientUid in uids)
             {
                 if (uid == clientUid)
@@ -98,60 +102,6 @@ namespace HelperLibrary.Networking.ClientServer
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Findet den passenden Client welcher über diesen Socket mit dem Server verbunden ist.
-        /// </summary>
-        /// <param name="tcpClient">Socket mit dem der Client mit dem Server verbunden ist</param>
-        /// <returns>Gefundenen Client andernfalls null.</returns>
-        public BaseClientData GetClientFromList(TcpClient tcpClient)
-        {
-            foreach (BaseClientData client in _serverInstance.Clients)
-            {
-                if (client.TcpClient == tcpClient)
-                {
-                    return client;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Findet den passenden Client welcher mit dieser UID mit dem Server verbunden ist.
-        /// </summary>
-        /// <param name="uid">Client UID</param>
-        /// <returns>Gefundenen Client andernfalls null.</returns>
-        public BaseClientData GetClientFromList(string uid)
-        {
-            foreach (BaseClientData client in _serverInstance.Clients)
-            {
-                if (client.Uid == uid)
-                {
-                    return client;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Checks if a given ClientUID exists
-        /// </summary>
-        /// <param name="uid">ClientUID</param>
-        /// <returns>true if Client exists, false if not</returns>
-        public bool ClientUidExists(string uid)
-        {
-            foreach (BaseClientData client in _serverInstance.Clients)
-            {
-                if (client.Uid == uid)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
+        }        
     }
 }

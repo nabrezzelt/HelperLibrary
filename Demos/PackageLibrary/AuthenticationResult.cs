@@ -1,4 +1,4 @@
-﻿namespace PacketLibrary
+﻿namespace PackageLibrary
 {
     public enum AuthenticationResult
     {
