@@ -7,7 +7,7 @@ namespace HelperLibrary.Database
 {
     public class TableMapper
     {
-        public static List<T> MapReaderToTable<T>(MySqlDataReader reader)
+        public static List<T> MapToList<T>(MySqlDataReader reader)
         {
             List<T> tableRows = new List<T>();
 
@@ -42,7 +42,7 @@ namespace HelperLibrary.Database
             return tableRows;
         }
 
-        public static T DataReaderMapToObject<T>(MySqlDataReader reader)
+        public static T MapToObject<T>(MySqlDataReader reader)
         {
             var row = Activator.CreateInstance<T>();
 
