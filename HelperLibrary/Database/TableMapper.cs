@@ -1,43 +1,75 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace HelperLibrary.Database
 {
-    class TableMapper<T> where T : new()
+    public class TableMapper
     {
-        public static List<T> MapReaderToTable(MySqlDataReader reader)
+        public static List<T> MapReaderToTable<T>(MySqlDataReader reader)
         {
-            List<T> tableItems = new List<T>();
+            List<T> tableRows = new List<T>();
 
-            while(reader.Read())
+            while (reader.Read())
             {
-                T tableRow = new T();
-
-                foreach (var prop in typeof(T).GetProperties())
-                {
-                    object[] attributes = prop.GetCustomAttributes(true);
-
-                    string columnName = prop.Name;
-
-                    foreach (object attribute in attributes)
-                    {
-                        ColumnNameAttribute columnNameAttr = attribute as ColumnNameAttribute;
-
-                        if(columnNameAttr != null && String.IsNullOrEmpty(columnNameAttr.ColumnName))
-                        {
-                            columnName = columnNameAttr.ColumnName;
-                        }
-                    }                    
-
-                    tableRow.GetType().GetProperty(prop.Name).SetValue(prop, Convert.ChangeType(reader[columnName], prop.PropertyType), null);                                        
-                }
+                var row = Activator.CreateInstance<T>();                
                 
-                tableItems.Add(tableRow);
+                foreach (PropertyInfo property in typeof(T).GetProperties())
+                {
+                    string propertyName = property.Name;
+                    string columnName = propertyName;
+
+                    var propertyAttributes = property.GetCustomAttributes();
+
+                    foreach (Attribute propertyAttribute in propertyAttributes)
+                    {
+                        if (propertyAttribute is ColumnNameAttribute attribute)
+                        {
+                            if (!string.IsNullOrEmpty(attribute.ColumnName))
+                                columnName = attribute.ColumnName;
+                        }
+                    }
+
+                    property.SetValue(row, Convert.ChangeType(reader[columnName], property.PropertyType), null);
+                }
+
+                tableRows.Add(row);
             }
 
             reader.Close();
-            return tableItems;
+
+            return tableRows;
+        }
+
+        public static T DataReaderMapToObject<T>(MySqlDataReader reader)
+        {
+            var row = Activator.CreateInstance<T>();
+
+            reader.Read();
+
+            foreach (PropertyInfo property in typeof(T).GetProperties())
+            {
+                string propertyName = property.Name;
+                string columnName = propertyName;
+
+                var propertyAttributes = property.GetCustomAttributes();
+
+                foreach (Attribute propertyAttribute in propertyAttributes)
+                {
+                    if (propertyAttribute is ColumnNameAttribute attribute)
+                    {
+                        if (!string.IsNullOrEmpty(attribute.ColumnName))
+                            columnName = attribute.ColumnName;
+                    }
+                }
+
+                property.SetValue(row, Convert.ChangeType(reader[columnName], property.PropertyType), null);
+            }
+
+            reader.Close();
+
+            return row;
         }
     }
 }
