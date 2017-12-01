@@ -47,6 +47,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cryptography\HashManager.cs" />
+    <Compile Include="Cryptography\SelfSignedCertificates\CryptContext.cs" />
+    <Compile Include="Cryptography\SelfSignedCertificates\CryptKey.cs" />
+    <Compile Include="Cryptography\SelfSignedCertificates\DisposeableObject.cs" />
+    <Compile Include="Cryptography\SelfSignedCertificates\KeyExchangeKey.cs" />
+    <Compile Include="Cryptography\SelfSignedCertificates\KeyType.cs" />
+    <Compile Include="Cryptography\SelfSignedCertificates\SelfSignedCertProperties.cs" />
+    <Compile Include="Cryptography\SelfSignedCertificates\SignatureKey.cs" />
+    <Compile Include="Cryptography\SelfSignedCertificates\Win32ErrorHelper.cs" />
+    <Compile Include="Cryptography\SelfSignedCertificates\Win32Native.cs" />
     <Compile Include="Database\Exceptions\MissingConnectionStringException.cs" />
     <Compile Include="Database\Exceptions\CouldNotConnectException.cs" />
     <Compile Include="Database\Exceptions\NotConnectedException.cs" />

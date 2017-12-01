@@ -135,5 +135,10 @@ namespace HelperLibrary.Logging
             }
         }
         #endregion
+
+        public static void DisplaySelfCertDetails(X509Certificate2 certificate)
+        {            
+            Console.WriteLine(certificate.ToString());
+        }
     }
 }
