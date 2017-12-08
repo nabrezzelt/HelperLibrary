@@ -61,6 +61,8 @@
     <Compile Include="Database\Exceptions\NotConnectedException.cs" />
     <Compile Include="Database\Exceptions\QueryNotPreparedException.cs" />
     <Compile Include="Database\Exceptions\SQLQueryFailException.cs" />
+    <Compile Include="Database\Exceptions\InstanceAlreadyExistsException.cs" />
+    <Compile Include="Database\Exceptions\InstanceNotFoundException.cs" />
     <Compile Include="Emoticons\Emoticon.cs" />
     <Compile Include="FileSystem\IniFile.cs" />
     <Compile Include="Cryptography\KeySize.cs" />

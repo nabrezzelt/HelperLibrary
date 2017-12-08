@@ -9,18 +9,44 @@ namespace HelperLibrary.Database
 {
     public class MySQLDatabaseManager
     {
-        #region Singleton
-        private static MySQLDatabaseManager _instance;
+        #region Singleton/InstanceManagement
+        public const string DefaultInstanceName = "Default";
+        private static Dictionary<string, MySQLDatabaseManager> _instances = new Dictionary<string, MySQLDatabaseManager>();
+
+        public static MySQLDatabaseManager GetInstance(string instanceName)
+        {
+            return GetInstanceByName(instanceName) ?? throw new InstanceAlreadyExistsException($"Instance with name {DefaultInstanceName} not found!");
+        }
 
         public static MySQLDatabaseManager GetInstance()
         {
-            if (_instance != null)
+            return GetInstance(DefaultInstanceName);
+        }
+
+        private static MySQLDatabaseManager GetInstanceByName(string instanceName)
+        {
+            foreach (KeyValuePair<string, MySQLDatabaseManager> instance in _instances)
             {
-                return _instance;
+                if (instance.Key == instanceName)
+                {
+                    return instance.Value;
+                }
             }
 
-            _instance = new MySQLDatabaseManager();
-            return _instance;
+            return null;
+        }
+
+        public static void CreateInstance(string instanceName)
+        {
+            if (GetInstanceByName(instanceName) != null)
+                throw new InstanceAlreadyExistsException($"Instance with name {instanceName} already exists.");
+
+            _instances.Add(instanceName, new MySQLDatabaseManager());                                       
+        }
+
+        public static void CreateInstance()
+        {
+            CreateInstance(DefaultInstanceName);
         }
         #endregion
 
@@ -252,10 +278,10 @@ namespace HelperLibrary.Database
                 Connect();
             }
 
-            MySqlDataReader reader = _instance.Select("SELECT LAST_INSERT_ID()");
+            MySqlDataReader reader = Select("SELECT LAST_INSERT_ID()");
             reader.Read();
 
-            int id = reader.GetInt32(0);
+            var id = reader.GetInt32(0);
 
             reader.Close();
 
