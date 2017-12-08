@@ -30,7 +30,7 @@ namespace HelperLibrary.Database
 
         public delegate void OnSQLQueryExcecuted(object sender, SQLQueryEventArgs e);
         public delegate void OnConnectionSuccessful(object sender, EventArgs e);
-        public event OnSQLQueryExcecuted SQLQueryExcecuted;
+        public event OnSQLQueryExcecuted SQLQueryExecuted;
         public event OnConnectionSuccessful ConnectionSuccessful;
 
         private bool _isConnectionStringSet;
@@ -143,7 +143,7 @@ namespace HelperLibrary.Database
             try
             {
                 MySqlDataReader reader = _prepareSQLCommand.ExecuteReader();
-                SQLQueryExcecuted?.Invoke(this, new SQLQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SQLQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
+                SQLQueryExecuted?.Invoke(this, new SQLQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SQLQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
 
                 return reader;
             }
@@ -171,7 +171,7 @@ namespace HelperLibrary.Database
                 try
                 {
                     _prepareSQLCommand.ExecuteNonQuery();
-                    SQLQueryExcecuted?.Invoke(this, new SQLQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SQLQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
+                    SQLQueryExecuted?.Invoke(this, new SQLQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SQLQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
                 }
                 catch (MySqlException e)
                 {
@@ -203,7 +203,7 @@ namespace HelperLibrary.Database
             try
             {
                 cmd.ExecuteNonQuery();
-                SQLQueryExcecuted?.Invoke(this, new SQLQueryEventArgs(query, SQLQueryEventArgs.QueryType.InsertUpdateDelete));
+                SQLQueryExecuted?.Invoke(this, new SQLQueryEventArgs(query, SQLQueryEventArgs.QueryType.InsertUpdateDelete));
             }
             catch (MySqlException e)
             {
@@ -231,7 +231,7 @@ namespace HelperLibrary.Database
             try
             {
                 reader = cmd.ExecuteReader();
-                SQLQueryExcecuted?.Invoke(this, new SQLQueryEventArgs(query, SQLQueryEventArgs.QueryType.Select));
+                SQLQueryExecuted?.Invoke(this, new SQLQueryEventArgs(query, SQLQueryEventArgs.QueryType.Select));
             }
             catch (MySqlException e)
             {
