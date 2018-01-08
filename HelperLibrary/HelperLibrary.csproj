@@ -73,7 +73,7 @@
     <Compile Include="Emoticons\Emoticon.cs" />
     <Compile Include="FileSystem\IniFile.cs" />
     <Compile Include="Cryptography\KeySize.cs" />
-    <Compile Include="Database\MySQLDatabaseManager.cs" />
+    <Compile Include="Database\MySqlDatabaseManager.cs" />
     <Compile Include="Cryptography\RSAKeyManagement.cs" />
     <Compile Include="Logging\Log.cs" />
     <Compile Include="Networking\ClientServer\BaseClientData.cs" />

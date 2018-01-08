@@ -6,7 +6,7 @@ namespace HelperLibrary.PermissionManagement
 {
     public class GroupManager
     {
-        private static readonly MySQLDatabaseManager DBManager = MySQLDatabaseManager.GetInstance();
+        private static readonly MySqlDatabaseManager DBManager = MySqlDatabaseManager.GetInstance();
 
         public static List<PermissionGroup> GetAllGroups()
         {

@@ -5,7 +5,7 @@ namespace HelperLibrary.PermissionManagement
 {
     public class PermissionManager
     {
-        private static readonly MySQLDatabaseManager DBManager = MySQLDatabaseManager.GetInstance();
+        private static readonly MySqlDatabaseManager DBManager = MySqlDatabaseManager.GetInstance();
 
         public static bool HasPermission(int userId, Permission permission)
         {
