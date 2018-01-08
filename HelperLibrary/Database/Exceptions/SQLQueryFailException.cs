@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Serialization;
 
 namespace HelperLibrary.Database.Exceptions
 {
@@ -20,7 +19,5 @@ namespace HelperLibrary.Database.Exceptions
         {
             SQLQuery = sqlQuery;
         }
-
-        protected SQLQueryFailException(SerializationInfo info, StreamingContext context) : base(info, context) { }        
     }
 }

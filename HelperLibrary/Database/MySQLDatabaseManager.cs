@@ -11,11 +11,11 @@ namespace HelperLibrary.Database
     {
         #region Singleton/InstanceManagement
         public const string DefaultInstanceName = "Default";
-        private static Dictionary<string, MySQLDatabaseManager> _instances = new Dictionary<string, MySQLDatabaseManager>();
+        private static readonly Dictionary<string, MySQLDatabaseManager> Instances = new Dictionary<string, MySQLDatabaseManager>();
 
         public static MySQLDatabaseManager GetInstance(string instanceName)
         {
-            return GetInstanceByName(instanceName) ?? throw new InstanceAlreadyExistsException($"Instance with name {DefaultInstanceName} not found!");
+            return GetInstanceByName(instanceName) ?? throw new InstanceAlreadyExistsException($"Instance with name {instanceName} not found!");
         }
 
         public static MySQLDatabaseManager GetInstance()
@@ -25,7 +25,7 @@ namespace HelperLibrary.Database
 
         private static MySQLDatabaseManager GetInstanceByName(string instanceName)
         {
-            foreach (KeyValuePair<string, MySQLDatabaseManager> instance in _instances)
+            foreach (KeyValuePair<string, MySQLDatabaseManager> instance in Instances)
             {
                 if (instance.Key == instanceName)
                 {
@@ -41,7 +41,7 @@ namespace HelperLibrary.Database
             if (GetInstanceByName(instanceName) != null)
                 throw new InstanceAlreadyExistsException($"Instance with name {instanceName} already exists.");
 
-            _instances.Add(instanceName, new MySQLDatabaseManager());                                       
+            Instances.Add(instanceName, new MySQLDatabaseManager());
         }
 
         public static void CreateInstance()
