@@ -59,6 +59,7 @@
     <Compile Include="Cryptography\SelfSignedCertificates\SignatureKey.cs" />
     <Compile Include="Cryptography\SelfSignedCertificates\Win32ErrorHelper.cs" />
     <Compile Include="Cryptography\SelfSignedCertificates\Win32Native.cs" />
+    <Compile Include="Database\DatabaseConnection.cs" />
     <Compile Include="Database\Exceptions\MissingConnectionStringException.cs" />
     <Compile Include="Database\Exceptions\CouldNotConnectException.cs" />
     <Compile Include="Database\Exceptions\NotConnectedException.cs" />
@@ -66,6 +67,9 @@
     <Compile Include="Database\Exceptions\SQLQueryFailException.cs" />
     <Compile Include="Database\Exceptions\InstanceAlreadyExistsException.cs" />
     <Compile Include="Database\Exceptions\InstanceNotFoundException.cs" />
+    <Compile Include="Database\Exceptions\PreparedStatementNotFoundException.cs" />
+    <Compile Include="Database\MySqlDatabaseManagerV2.cs" />
+    <Compile Include="Database\PreparedStatement.cs" />
     <Compile Include="Emoticons\Emoticon.cs" />
     <Compile Include="FileSystem\IniFile.cs" />
     <Compile Include="Cryptography\KeySize.cs" />

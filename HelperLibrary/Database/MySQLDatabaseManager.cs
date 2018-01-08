@@ -7,25 +7,25 @@ using System.Text.RegularExpressions;
 
 namespace HelperLibrary.Database
 {
-    public class MySQLDatabaseManager
+    public class MySqlDatabaseManager
     {
         #region Singleton/InstanceManagement
         public const string DefaultInstanceName = "Default";
-        private static Dictionary<string, MySQLDatabaseManager> _instances = new Dictionary<string, MySQLDatabaseManager>();
+        private static readonly Dictionary<string, MySqlDatabaseManager> Instances = new Dictionary<string, MySqlDatabaseManager>();
 
-        public static MySQLDatabaseManager GetInstance(string instanceName)
+        public static MySqlDatabaseManager GetInstance(string instanceName)
         {
-            return GetInstanceByName(instanceName) ?? throw new InstanceAlreadyExistsException($"Instance with name {DefaultInstanceName} not found!");
+            return GetInstanceByName(instanceName) ?? throw new InstanceAlreadyExistsException($"Instance with name {instanceName} not found!");
         }
 
-        public static MySQLDatabaseManager GetInstance()
+        public static MySqlDatabaseManager GetInstance()
         {
             return GetInstance(DefaultInstanceName);
         }
 
-        private static MySQLDatabaseManager GetInstanceByName(string instanceName)
+        private static MySqlDatabaseManager GetInstanceByName(string instanceName)
         {
-            foreach (KeyValuePair<string, MySQLDatabaseManager> instance in _instances)
+            foreach (KeyValuePair<string, MySqlDatabaseManager> instance in Instances)
             {
                 if (instance.Key == instanceName)
                 {
@@ -41,7 +41,7 @@ namespace HelperLibrary.Database
             if (GetInstanceByName(instanceName) != null)
                 throw new InstanceAlreadyExistsException($"Instance with name {instanceName} already exists.");
 
-            _instances.Add(instanceName, new MySQLDatabaseManager());                                       
+            Instances.Add(instanceName, new MySqlDatabaseManager());
         }
 
         public static void CreateInstance()
@@ -61,7 +61,7 @@ namespace HelperLibrary.Database
 
         private bool _isConnectionStringSet;
 
-        private MySQLDatabaseManager()
+        private MySqlDatabaseManager()
         {
             _connection = new MySqlConnection();
         }
@@ -97,7 +97,7 @@ namespace HelperLibrary.Database
         {
             if (!_isConnectionStringSet)
             {
-                throw new MissingConnectionStringException("ConnectionString not set. Please use MySQLDatabaseManager.SetConnectionString() before .");
+                throw new MissingConnectionStringException("ConnectionString not set. Please use MySqlDatabaseManager.SetConnectionString() before.");
             }
 
             try
@@ -111,7 +111,7 @@ namespace HelperLibrary.Database
             }
         }
 
-        ~MySQLDatabaseManager()
+        ~MySqlDatabaseManager()
         {
             if (IsConnected())
                 _connection.Close();

@@ -6,8 +6,8 @@ namespace DatabaseDemo
 {
     public class Program
     {
-        private static MySQLDatabaseManager _dbManagerDefault;
-        private static MySQLDatabaseManager _dbManagerAuth;
+        private static MySqlDatabaseManager _dbManagerDefault;
+        private static MySqlDatabaseManager _dbManagerAuth;
         private static void Main(string[] args)
         {
             InitializeDBConnection();
@@ -34,19 +34,19 @@ namespace DatabaseDemo
         private static void InitializeDBConnection()
         {
             //Create first instance for default DB:
-            MySQLDatabaseManager.CreateInstance();
-            _dbManagerDefault = MySQLDatabaseManager.GetInstance();
+            MySqlDatabaseManager.CreateInstance();
+            _dbManagerDefault = MySqlDatabaseManager.GetInstance();
 
-            _dbManagerDefault.SetConnectionString("localhost", "root", "moritz12", "test-default");
+            _dbManagerDefault.SetConnectionString("localhost", "root", "123465", "test-default");
             _dbManagerDefault.Connect();
             _dbManagerDefault.SQLQueryExecuted += OnSQLQueryExecuted;
             Console.WriteLine("Default-DB connected!");
 
             //Create second instance for Auth-DB:
-            MySQLDatabaseManager.CreateInstance("Auth");
-            _dbManagerAuth = MySQLDatabaseManager.GetInstance("Auth");
+            MySqlDatabaseManager.CreateInstance("Auth");
+            _dbManagerAuth = MySqlDatabaseManager.GetInstance("Auth");
 
-            _dbManagerAuth.SetConnectionString("localhost", "root", "moritz12", "test-auth");
+            _dbManagerAuth.SetConnectionString("localhost", "root", "123465", "test-auth");
             _dbManagerAuth.Connect();
             _dbManagerAuth.SQLQueryExecuted += OnSQLQueryExecuted;
             Console.WriteLine("Auth-DB connected!");            
@@ -79,7 +79,6 @@ namespace DatabaseDemo
                 var id = reader.GetInt32(0);
                 var username = reader.GetString(1);
             }
-
         }
 
         public static void PreparedInsertStatement()
