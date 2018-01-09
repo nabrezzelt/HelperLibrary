@@ -8,7 +8,7 @@ namespace HelperLibrary.PermissionManagement
 
         public bool HasPermission(Permission permission)
         {
-            return PermissionManager.HasPermission(Id, permission);
+            return PermissionManager.UserHasPermission(Id, permission);
         }
 
         public (Permission Permission, bool HasPermission) GetAllUserPermissions()

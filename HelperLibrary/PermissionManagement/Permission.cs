@@ -15,6 +15,11 @@
             Description = description;
         }
 
+        public Permission()
+        {
+
+        }
+
         public override string ToString()
         {
             return Name;
