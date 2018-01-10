@@ -4,20 +4,20 @@ namespace HelperLibrary.Database.Exceptions
 {
 
     [Serializable]
-    public class SQLQueryFailException : Exception
+    public class SqlQueryFailException : Exception
     {
-        public string SQLQuery { get; }
+        public string SqlQuery { get; }
 
-        public SQLQueryFailException() { }
+        public SqlQueryFailException() { }
 
-        public SQLQueryFailException(string message, string sqlQuery) : base(message)
+        public SqlQueryFailException(string message, string sqlQuery) : base(message)
         {
-            SQLQuery = sqlQuery;
+            SqlQuery = sqlQuery;
         }
 
-        public SQLQueryFailException(string message, string sqlQuery, Exception inner) : base(message, inner)
+        public SqlQueryFailException(string message, string sqlQuery, Exception inner) : base(message, inner)
         {
-            SQLQuery = sqlQuery;
+            SqlQuery = sqlQuery;
         }
     }
 }

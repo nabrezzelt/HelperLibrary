@@ -38,13 +38,13 @@ namespace HelperLibrary.Database
             try
             {
                 MySqlDataReader reader = _preparedStatement.ExecuteReader();
-                _connection.InvokeSqlQueryExecuted(ReplacePlaceholderInPreparedQuery(), SQLQueryEventArgs.QueryType.PreparedSelect);
+                _connection.InvokeSqlQueryExecuted(ReplacePlaceholderInPreparedQuery(), SqlQueryEventArgs.QueryType.PreparedSelect);
 
                 return reader;
             }
             catch (Exception e)
             {
-                throw new SQLQueryFailException("Query failed!", ReplacePlaceholderInPreparedQuery(), e);
+                throw new SqlQueryFailException("Query failed!", ReplacePlaceholderInPreparedQuery(), e);
             }
         }
 
@@ -53,11 +53,11 @@ namespace HelperLibrary.Database
             try
             {
                 _preparedStatement.ExecuteNonQuery();
-                _connection.InvokeSqlQueryExecuted(ReplacePlaceholderInPreparedQuery(), SQLQueryEventArgs.QueryType.PreparedInsertUpdateDelete);
+                _connection.InvokeSqlQueryExecuted(ReplacePlaceholderInPreparedQuery(), SqlQueryEventArgs.QueryType.PreparedInsertUpdateDelete);
             }
             catch (MySqlException e)
             {
-                throw new SQLQueryFailException("SQL-Query failed", ReplacePlaceholderInPreparedQuery(), e);
+                throw new SqlQueryFailException("SQL-Query failed", ReplacePlaceholderInPreparedQuery(), e);
             }
         }
 

@@ -64,7 +64,7 @@
     <Compile Include="Database\Exceptions\CouldNotConnectException.cs" />
     <Compile Include="Database\Exceptions\NotConnectedException.cs" />
     <Compile Include="Database\Exceptions\QueryNotPreparedException.cs" />
-    <Compile Include="Database\Exceptions\SQLQueryFailException.cs" />
+    <Compile Include="Database\Exceptions\SqlQueryFailException.cs" />
     <Compile Include="Database\Exceptions\InstanceAlreadyExistsException.cs" />
     <Compile Include="Database\Exceptions\InstanceNotFoundException.cs" />
     <Compile Include="Database\Exceptions\PreparedStatementNotFoundException.cs" />
@@ -95,7 +95,7 @@
     <Compile Include="PermissionManagement\PermissionGroup.cs" />
     <Compile Include="PermissionManagement\PermissionManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Database\SQLQueryEventArgs.cs" />
+    <Compile Include="Database\SqlQueryEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

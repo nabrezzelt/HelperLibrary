@@ -120,7 +120,7 @@ namespace HelperLibrary.PermissionManagement
                     $"INSERT INTO group_user_relation (permission_group_id, user_id) VALUES ({groupId}, {userId})";
                 DbManager.InsertUpdateDelete(query);
             }
-            catch (SQLQueryFailException)
+            catch (SqlQueryFailException)
             {
                 //Seems that the user is already member of this group
             }

@@ -14,7 +14,7 @@ namespace HelperLibrary.Database
 
         private readonly bool _autoPrepareAfterConnectionSuccessful;
 
-        public event EventHandler SQLQueryExecuted;
+        public event EventHandler<SqlQueryEventArgs> SqlQueryExecuted;
         public event EventHandler ConnectionSuccessful;
 
         public bool IsConnected => _connection?.State == ConnectionState.Open;
@@ -76,12 +76,12 @@ namespace HelperLibrary.Database
             try
             {
                 cmd.ExecuteNonQuery();
-                SQLQueryExecuted?.Invoke(this, new SQLQueryEventArgs(query, SQLQueryEventArgs.QueryType.InsertUpdateDelete));
+                SqlQueryExecuted?.Invoke(this, new SqlQueryEventArgs(query, SqlQueryEventArgs.QueryType.InsertUpdateDelete));
             }
             catch (MySqlException e)
             {
 
-                throw new SQLQueryFailException("SQL-Query failed!", query, e);
+                throw new SqlQueryFailException("SQL-Query failed!", query, e);
             }
         }
 
@@ -100,11 +100,11 @@ namespace HelperLibrary.Database
             try
             {
                 reader = cmd.ExecuteReader();
-                SQLQueryExecuted?.Invoke(this, new SQLQueryEventArgs(query, SQLQueryEventArgs.QueryType.Select));
+                SqlQueryExecuted?.Invoke(this, new SqlQueryEventArgs(query, SqlQueryEventArgs.QueryType.Select));
             }
             catch (MySqlException e)
             {
-                throw new SQLQueryFailException("SQL-Query failed!", query, e);
+                throw new SqlQueryFailException("SQL-Query failed!", query, e);
             }
 
             return reader;
@@ -155,9 +155,9 @@ namespace HelperLibrary.Database
             throw new PreparedStatementNotFoundException();
         }
 
-        internal void InvokeSqlQueryExecuted(string query, SQLQueryEventArgs.QueryType queryType)
+        internal void InvokeSqlQueryExecuted(string query, SqlQueryEventArgs.QueryType queryType)
         {
-            SQLQueryExecuted?.Invoke(this, new SQLQueryEventArgs(query, SQLQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
+            SqlQueryExecuted?.Invoke(this, new SqlQueryEventArgs(query, SqlQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
         }
     }
 }

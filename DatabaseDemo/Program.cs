@@ -10,11 +10,11 @@ namespace DatabaseDemo
         private static MySqlDatabaseManager _dbManagerAuth;
         private static void Main(string[] args)
         {
-            InitializeDBConnection();
+            InitializeDbConnection();
             RecreateUserTable();
 
             Console.ReadLine();
-        }
+        }        
 
         public static void RecreateUserTable()
         {
@@ -31,7 +31,7 @@ namespace DatabaseDemo
             Console.WriteLine("Usertable recreated!");
         }
 
-        private static void InitializeDBConnection()
+        private static void InitializeDbConnection()
         {
             //Create first instance for default DB:
             MySqlDatabaseManager.CreateInstance();
@@ -39,7 +39,7 @@ namespace DatabaseDemo
 
             _dbManagerDefault.SetConnectionString("localhost", "root", "123465", "test-default");
             _dbManagerDefault.Connect();
-            _dbManagerDefault.SQLQueryExecuted += OnSQLQueryExecuted;
+            _dbManagerDefault.SqlQueryExecuted += OnSqlQueryExecuted;
             Console.WriteLine("Default-DB connected!");
 
             //Create second instance for Auth-DB:
@@ -48,19 +48,19 @@ namespace DatabaseDemo
 
             _dbManagerAuth.SetConnectionString("localhost", "root", "123465", "test-auth");
             _dbManagerAuth.Connect();
-            _dbManagerAuth.SQLQueryExecuted += OnSQLQueryExecuted;
+            _dbManagerAuth.SqlQueryExecuted += OnSqlQueryExecuted;
             Console.WriteLine("Auth-DB connected!");            
         }
 
-        private static void OnSQLQueryExecuted(object sender, SQLQueryEventArgs e)
+        private static void OnSqlQueryExecuted(object sender, SqlQueryEventArgs e)
         {
             Console.WriteLine($"[TYPE: {e.Type}] {e.Query}");
         }
 
         public static void SelectWithoutPrepare()
         {
-            var userID = 1;
-            string query = "";
+            //var userId = 1;
+            //string query = "";
         }
 
         public static void SelectWithPrepare()
@@ -78,6 +78,8 @@ namespace DatabaseDemo
             {
                 var id = reader.GetInt32(0);
                 var username = reader.GetString(1);
+
+                foundUsers.Add(new User(id, username));
             }
         }
 
