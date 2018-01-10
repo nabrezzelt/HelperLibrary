@@ -75,6 +75,13 @@
     <Compile Include="Cryptography\KeySize.cs" />
     <Compile Include="Database\MySqlDatabaseManager.cs" />
     <Compile Include="Cryptography\RSAKeyManagement.cs" />
+    <Compile Include="ForumSystem\Category.cs" />
+    <Compile Include="ForumSystem\CategoryManager.cs" />
+    <Compile Include="ForumSystem\Post.cs" />
+    <Compile Include="ForumSystem\PostManager.cs" />
+    <Compile Include="ForumSystem\PostVoteType.cs" />
+    <Compile Include="ForumSystem\Topic.cs" />
+    <Compile Include="ForumSystem\TopicManager.cs" />
     <Compile Include="Logging\Log.cs" />
     <Compile Include="Networking\ClientServer\BaseClientData.cs" />
     <Compile Include="Networking\ClientServer\Client.cs" />
