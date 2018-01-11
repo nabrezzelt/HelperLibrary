@@ -6,15 +6,15 @@ namespace DatabaseDemo
 {
     public class Program
     {
-        private static MySQLDatabaseManager _dbManagerDefault;
-        private static MySQLDatabaseManager _dbManagerAuth;
+        private static MySqlDatabaseManager _dbManagerDefault;
+        private static MySqlDatabaseManager _dbManagerAuth;
         private static void Main(string[] args)
         {
-            InitializeDBConnection();
+            InitializeDbConnection();
             RecreateUserTable();
 
             Console.ReadLine();
-        }
+        }        
 
         public static void RecreateUserTable()
         {
@@ -31,36 +31,36 @@ namespace DatabaseDemo
             Console.WriteLine("Usertable recreated!");
         }
 
-        private static void InitializeDBConnection()
+        private static void InitializeDbConnection()
         {
             //Create first instance for default DB:
-            MySQLDatabaseManager.CreateInstance();
-            _dbManagerDefault = MySQLDatabaseManager.GetInstance();
+            MySqlDatabaseManager.CreateInstance();
+            _dbManagerDefault = MySqlDatabaseManager.GetInstance();
 
-            _dbManagerDefault.SetConnectionString("localhost", "root", "moritz12", "test-default");
+            _dbManagerDefault.SetConnectionString("localhost", "root", "123465", "test-default");
             _dbManagerDefault.Connect();
-            _dbManagerDefault.SQLQueryExecuted += OnSQLQueryExecuted;
+            _dbManagerDefault.SqlQueryExecuted += OnSqlQueryExecuted;
             Console.WriteLine("Default-DB connected!");
 
             //Create second instance for Auth-DB:
-            MySQLDatabaseManager.CreateInstance("Auth");
-            _dbManagerAuth = MySQLDatabaseManager.GetInstance("Auth");
+            MySqlDatabaseManager.CreateInstance("Auth");
+            _dbManagerAuth = MySqlDatabaseManager.GetInstance("Auth");
 
-            _dbManagerAuth.SetConnectionString("localhost", "root", "moritz12", "test-auth");
+            _dbManagerAuth.SetConnectionString("localhost", "root", "123465", "test-auth");
             _dbManagerAuth.Connect();
-            _dbManagerAuth.SQLQueryExecuted += OnSQLQueryExecuted;
+            _dbManagerAuth.SqlQueryExecuted += OnSqlQueryExecuted;
             Console.WriteLine("Auth-DB connected!");            
         }
 
-        private static void OnSQLQueryExecuted(object sender, SQLQueryEventArgs e)
+        private static void OnSqlQueryExecuted(object sender, SqlQueryEventArgs e)
         {
             Console.WriteLine($"[TYPE: {e.Type}] {e.Query}");
         }
 
         public static void SelectWithoutPrepare()
         {
-            var userID = 1;
-            string query = "";
+            //var userId = 1;
+            //string query = "";
         }
 
         public static void SelectWithPrepare()
@@ -78,8 +78,9 @@ namespace DatabaseDemo
             {
                 var id = reader.GetInt32(0);
                 var username = reader.GetString(1);
-            }
 
+                foundUsers.Add(new User(id, username));
+            }
         }
 
         public static void PreparedInsertStatement()

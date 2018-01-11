@@ -7,25 +7,25 @@ using System.Text.RegularExpressions;
 
 namespace HelperLibrary.Database
 {
-    public class MySQLDatabaseManager
+    public class MySqlDatabaseManager
     {
         #region Singleton/InstanceManagement
         public const string DefaultInstanceName = "Default";
-        private static Dictionary<string, MySQLDatabaseManager> _instances = new Dictionary<string, MySQLDatabaseManager>();
+        private static readonly Dictionary<string, MySqlDatabaseManager> Instances = new Dictionary<string, MySqlDatabaseManager>();
 
-        public static MySQLDatabaseManager GetInstance(string instanceName)
+        public static MySqlDatabaseManager GetInstance(string instanceName)
         {
-            return GetInstanceByName(instanceName) ?? throw new InstanceAlreadyExistsException($"Instance with name {DefaultInstanceName} not found!");
+            return GetInstanceByName(instanceName) ?? throw new InstanceAlreadyExistsException($"Instance with name {instanceName} not found!");
         }
 
-        public static MySQLDatabaseManager GetInstance()
+        public static MySqlDatabaseManager GetInstance()
         {
             return GetInstance(DefaultInstanceName);
         }
 
-        private static MySQLDatabaseManager GetInstanceByName(string instanceName)
+        private static MySqlDatabaseManager GetInstanceByName(string instanceName)
         {
-            foreach (KeyValuePair<string, MySQLDatabaseManager> instance in _instances)
+            foreach (KeyValuePair<string, MySqlDatabaseManager> instance in Instances)
             {
                 if (instance.Key == instanceName)
                 {
@@ -41,7 +41,7 @@ namespace HelperLibrary.Database
             if (GetInstanceByName(instanceName) != null)
                 throw new InstanceAlreadyExistsException($"Instance with name {instanceName} already exists.");
 
-            _instances.Add(instanceName, new MySQLDatabaseManager());                                       
+            Instances.Add(instanceName, new MySqlDatabaseManager());
         }
 
         public static void CreateInstance()
@@ -51,17 +51,15 @@ namespace HelperLibrary.Database
         #endregion
 
         private readonly MySqlConnection _connection;
-        private MySqlCommand _prepareSQLCommand;
+        private MySqlCommand _prepareSqlCommand;
         private Dictionary<string, object> _bindedParams = new Dictionary<string, object>();
 
-        public delegate void OnSQLQueryExcecuted(object sender, SQLQueryEventArgs e);
-        public delegate void OnConnectionSuccessful(object sender, EventArgs e);
-        public event OnSQLQueryExcecuted SQLQueryExecuted;
-        public event OnConnectionSuccessful ConnectionSuccessful;
+        public event EventHandler<SqlQueryEventArgs> SqlQueryExecuted;
+        public event EventHandler ConnectionSuccessful;
 
         private bool _isConnectionStringSet;
 
-        private MySQLDatabaseManager()
+        private MySqlDatabaseManager()
         {
             _connection = new MySqlConnection();
         }
@@ -83,7 +81,6 @@ namespace HelperLibrary.Database
                 Database = database
             };
 
-
             _connection.ConnectionString = connectionBuilder.ToString();
             _isConnectionStringSet = true;
         }
@@ -97,7 +94,7 @@ namespace HelperLibrary.Database
         {
             if (!_isConnectionStringSet)
             {
-                throw new MissingConnectionStringException("ConnectionString not set. Please use MySQLDatabaseManager.SetConnectionString() before .");
+                throw new MissingConnectionStringException("ConnectionString not set. Please use MySqlDatabaseManager.SetConnectionString() before.");
             }
 
             try
@@ -111,7 +108,7 @@ namespace HelperLibrary.Database
             }
         }
 
-        ~MySQLDatabaseManager()
+        ~MySqlDatabaseManager()
         {
             if (IsConnected())
                 _connection.Close();
@@ -124,9 +121,9 @@ namespace HelperLibrary.Database
         public void PrepareQuery(string query)
         {
             _bindedParams = new Dictionary<string, object>();
-            _prepareSQLCommand = _connection.CreateCommand();
-            _prepareSQLCommand.CommandText = query;
-            _prepareSQLCommand.Prepare();
+            _prepareSqlCommand = _connection.CreateCommand();
+            _prepareSqlCommand.CommandText = query;
+            _prepareSqlCommand.Prepare();
         }
 
         /// <summary>
@@ -137,9 +134,9 @@ namespace HelperLibrary.Database
         /// <exception cref="QueryNotPreparedException" />
         public void BindValue(string parameterName, object value)
         {
-            if (_prepareSQLCommand != null)
+            if (_prepareSqlCommand != null)
             {
-                _prepareSQLCommand.Parameters.AddWithValue(parameterName, value);
+                _prepareSqlCommand.Parameters.AddWithValue(parameterName, value);
 
                 if (_bindedParams.ContainsKey(parameterName))
                 {
@@ -160,22 +157,22 @@ namespace HelperLibrary.Database
         /// Executes a Prepared statement.
         /// </summary>
         /// <returns>Result of the Query.</returns>
-        /// <exception cref="SQLQueryFailException" />
+        /// <exception cref="SqlQueryFailException" />
         /// <exception cref="QueryNotPreparedException" />
         public MySqlDataReader ExecutePreparedSelect()
         {
-            if (_prepareSQLCommand == null) throw new QueryNotPreparedException();
+            if (_prepareSqlCommand == null) throw new QueryNotPreparedException();
 
             try
             {
-                MySqlDataReader reader = _prepareSQLCommand.ExecuteReader();
-                SQLQueryExecuted?.Invoke(this, new SQLQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SQLQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
+                MySqlDataReader reader = _prepareSqlCommand.ExecuteReader();
+                SqlQueryExecuted?.Invoke(this, new SqlQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SqlQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
 
                 return reader;
             }
             catch (Exception e)
             {
-                throw new SQLQueryFailException("Query failed!", ReplacePlaceholderInPreparedQuery(), e);
+                throw new SqlQueryFailException("Query failed!", ReplacePlaceholderInPreparedQuery(), e);
             }
         }
 
@@ -183,7 +180,7 @@ namespace HelperLibrary.Database
         /// Executes a Prepared statement.
         /// </summary>
         /// <returns>Result of the Query.</returns>
-        /// <exception cref="SQLQueryFailException" />
+        /// <exception cref="SqlQueryFailException" />
         /// <exception cref="QueryNotPreparedException" />
         public void ExecutePreparedInsertUpdateDelete()
         {
@@ -192,16 +189,16 @@ namespace HelperLibrary.Database
                 Connect();
             }
 
-            if (_prepareSQLCommand != null)
+            if (_prepareSqlCommand != null)
             {
                 try
                 {
-                    _prepareSQLCommand.ExecuteNonQuery();
-                    SQLQueryExecuted?.Invoke(this, new SQLQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SQLQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
+                    _prepareSqlCommand.ExecuteNonQuery();
+                    SqlQueryExecuted?.Invoke(this, new SqlQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SqlQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
                 }
                 catch (MySqlException e)
                 {
-                    throw new SQLQueryFailException("SQL-Query failed", ReplacePlaceholderInPreparedQuery(), e);
+                    throw new SqlQueryFailException("SQL-Query failed", ReplacePlaceholderInPreparedQuery(), e);
                 }
             }
             else
@@ -214,7 +211,7 @@ namespace HelperLibrary.Database
         /// Executes a given SQL-Query that return no Rows.
         /// </summary>
         /// <param name="query">Query to execute.</param>
-        /// <exception cref="SQLQueryFailException" />
+        /// <exception cref="SqlQueryFailException" />
         public void InsertUpdateDelete(string query)
         {
             if (!IsConnected())
@@ -229,12 +226,12 @@ namespace HelperLibrary.Database
             try
             {
                 cmd.ExecuteNonQuery();
-                SQLQueryExecuted?.Invoke(this, new SQLQueryEventArgs(query, SQLQueryEventArgs.QueryType.InsertUpdateDelete));
+                SqlQueryExecuted?.Invoke(this, new SqlQueryEventArgs(query, SqlQueryEventArgs.QueryType.InsertUpdateDelete));
             }
             catch (MySqlException e)
             {
 
-                throw new SQLQueryFailException("SQL-Query failed!", query, e);
+                throw new SqlQueryFailException("SQL-Query failed!", query, e);
             }
         }
 
@@ -257,11 +254,11 @@ namespace HelperLibrary.Database
             try
             {
                 reader = cmd.ExecuteReader();
-                SQLQueryExecuted?.Invoke(this, new SQLQueryEventArgs(query, SQLQueryEventArgs.QueryType.Select));
+                SqlQueryExecuted?.Invoke(this, new SqlQueryEventArgs(query, SqlQueryEventArgs.QueryType.Select));
             }
             catch (MySqlException e)
             {
-                throw new SQLQueryFailException("SQL-Query failed!", query, e);
+                throw new SqlQueryFailException("SQL-Query failed!", query, e);
             }
 
             return reader;
@@ -378,7 +375,7 @@ namespace HelperLibrary.Database
         /// <returns>Binded SQL-Query.</returns>
         private string ReplacePlaceholderInPreparedQuery()
         {
-            string bindedQuery = _prepareSQLCommand.CommandText;
+            string bindedQuery = _prepareSqlCommand.CommandText;
 
             foreach (KeyValuePair<string, object> entry in _bindedParams)
             {
@@ -392,9 +389,9 @@ namespace HelperLibrary.Database
                     return bindedQuery.Replace(entry.Key, "\"" + entry.Value + "\"");
                 }
 
-                if (entry.Value is double)
+                if (entry.Value is double value)
                 {
-                    return bindedQuery.Replace(entry.Key, ((double)entry.Value).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture));
+                    return bindedQuery.Replace(entry.Key, value.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture));
                 }
 
                 if (entry.Value is DateTime val)

@@ -2,13 +2,13 @@
 
 namespace HelperLibrary.Database
 {
-    public class SQLQueryEventArgs : EventArgs
+    public class SqlQueryEventArgs : EventArgs
     {
         public string Query;
 
         public QueryType Type;
 
-        public SQLQueryEventArgs(string query, QueryType type)
+        public SqlQueryEventArgs(string query, QueryType type)
         {
             Query = query;
             Type = type;            
