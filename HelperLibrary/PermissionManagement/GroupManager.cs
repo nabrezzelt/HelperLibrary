@@ -9,7 +9,7 @@ namespace HelperLibrary.PermissionManagement
     {
         private static readonly MySqlDatabaseManager DbManager = MySqlDatabaseManager.GetInstance();
 
-        public static List<PermissionGroup> GetAllGroups()
+        public static List<PermissionGroup> GetAllPermissionGroups()
         {
             const string query = "SELECT * FROM permission_groups";
             var reader = DbManager.Select(query);
@@ -53,7 +53,7 @@ namespace HelperLibrary.PermissionManagement
             return group;
         }       
 
-        public static int CreateGroup(string groupName)
+        public static int CreatePermissionGroup(string groupName)
         {
             const string query = "INSERT INTO (name) permission_groups VALUES (@name)";
             DbManager.PrepareQuery(query);
@@ -63,12 +63,12 @@ namespace HelperLibrary.PermissionManagement
             return DbManager.GetLastID();
         }
 
-        public static void RenameGroup(PermissionGroup group, string newName)
+        public static void RenamePermissionGroup(PermissionGroup group, string newName)
         {
-            RenameGroup(group.Id, newName);
+            RenamePermissionGroup(group.Id, newName);
         }
 
-        public static void RenameGroup(int groupId, string newName)
+        public static void RenamePermissionGroup(int groupId, string newName)
         {
             const string query = "UPDATE permission_groups SET name = @name WHERE permission_group_id = @id";
             DbManager.PrepareQuery(query);
@@ -77,7 +77,7 @@ namespace HelperLibrary.PermissionManagement
             DbManager.ExecutePreparedInsertUpdateDelete();
         }
 
-        public static void DeleteGroup(int groupId)
+        public static void DeletePermissionGroup(int groupId)
         {
             PermissionManager.RevokeAllPermissionsFromGroup(groupId);
             RemoveAllUsersFromGroup(groupId);
@@ -97,22 +97,22 @@ namespace HelperLibrary.PermissionManagement
             RemoveAllUsersFromGroup(group.Id);
         }
 
-        public static void AddUserToGroup(IUser user, PermissionGroup group)
+        public static void AddUserToPermissionGroup(IUser user, PermissionGroup group)
         {
-            AddUserToGroup(user.Id, group.Id);
+            AddUserToPermissionGroup(user.Id, group.Id);
         }
 
-        public static void AddUserToGroup(IUser user, int groupId)
+        public static void AddUserToPermissionGroup(IUser user, int groupId)
         {
-            AddUserToGroup(user.Id, groupId);
+            AddUserToPermissionGroup(user.Id, groupId);
         }
 
-        public static void AddUserToGroup(int userId, PermissionGroup group)
+        public static void AddUserToPermissionGroup(int userId, PermissionGroup group)
         {
-            AddUserToGroup(userId, group.Id);
+            AddUserToPermissionGroup(userId, group.Id);
         }
 
-        public static void AddUserToGroup(int userId, int groupId)
+        public static void AddUserToPermissionGroup(int userId, int groupId)
         {
             try
             {
@@ -193,6 +193,67 @@ namespace HelperLibrary.PermissionManagement
             reader.Close();
 
             return permissions;            
+        }
+
+        public static List<PermissionGroup> GetAssignedPermissionGroups(int userId)
+        {
+            string query = "SELECT permission_groups.*  " +
+                           "FROM group_user_relation " +
+                           "JOIN permission_groups " +
+                           "ON group_user_relation.permission_group_id = permission_groups.permission_group_id " +
+                          $"WHERE user_id = {userId}";
+            var reader = DbManager.Select(query);
+
+            var groups = new List<PermissionGroup>();
+
+            while (reader.Read())
+            {
+                var id = reader.GetInt32(0);
+                var name = reader.GetString(1);
+
+                groups.Add(new PermissionGroup(id, name));
+            }
+
+            reader.Close();
+
+            return groups;
+        }
+
+        public static List<PermissionGroup> GetAssignedPermissionGroups(IUser user)
+        {
+            return GetAssignedPermissionGroups(user.Id);
+        }
+
+        public static List<PermissionGroup> GetUnassignedPermissionGroups(int userId)
+        {
+            string query = "SELECT permission_groups.permission_group_id, name " +
+                           "FROM permission_groups " +
+                           "LEFT JOIN( " +
+                           "SELECT user_id, permission_group_id " +
+                           "FROM group_user_relation " +
+                           $"WHERE user_id = {userId}) AS A " +
+                           "ON permission_groups.permission_group_id = A.permission_group_id " +
+                           "WHERE user_id IS NULL";
+            var reader = DbManager.Select(query);
+
+            var groups = new List<PermissionGroup>();
+
+            while (reader.Read())
+            {
+                var id = reader.GetInt32(0);
+                var name = reader.GetString(1);
+
+                groups.Add(new PermissionGroup(id, name));
+            }
+
+            reader.Close();
+
+            return groups;
+        }
+
+        public static List<PermissionGroup> GetUnassignedPermissionGroups(IUser user)
+        {
+            return GetUnassignedPermissionGroups(user.Id);
         }
     }   
 }                                                                                                                             

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace HelperLibrary.PermissionManagement
 {
@@ -23,7 +24,7 @@ namespace HelperLibrary.PermissionManagement
 
         public void JoinPermissionGroup(int groupId)
         {
-            GroupManager.AddUserToGroup(Id, groupId);
+            GroupManager.AddUserToPermissionGroup(Id, groupId);
         }
 
         public void LeavePermissionGroup(int groupId)
@@ -35,5 +36,15 @@ namespace HelperLibrary.PermissionManagement
         {
             LeavePermissionGroup(group.Id);
         }
+
+        public List<PermissionGroup> GetAssignedPermissionGroups()
+        {
+            return GroupManager.GetAssignedPermissionGroups(Id);
+        }
+
+        public List<PermissionGroup> GetUnassignedPermissionGroups()
+        {
+            return GroupManager.GetUnassignedPermissionGroups(Id);
+        }        
     }
 }
