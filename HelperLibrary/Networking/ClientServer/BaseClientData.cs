@@ -49,7 +49,7 @@ namespace HelperLibrary.Networking.ClientServer
             ClientStream.Write(lengthBytes, 0, 4); //Senden der Länge/Größe des Textes
             ClientStream.Write(packageBytes, 0, packageBytes.Length); //Senden der eingentlichen Daten/des Textes   
 
-            Log.Debug("Packet send to: " + Uid);
+            Log.Debug($"Package of type {package.GetType().Name} send to: {Uid}");
         }
     }
 }
