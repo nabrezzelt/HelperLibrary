@@ -77,6 +77,7 @@
     <Compile Include="Cryptography\RSAKeyManagement.cs" />
     <Compile Include="ForumSystem\Category.cs" />
     <Compile Include="ForumSystem\CategoryManager.cs" />
+    <Compile Include="ForumSystem\LastTopic.cs" />
     <Compile Include="ForumSystem\Post.cs" />
     <Compile Include="ForumSystem\PostManager.cs" />
     <Compile Include="ForumSystem\PostVoteType.cs" />
