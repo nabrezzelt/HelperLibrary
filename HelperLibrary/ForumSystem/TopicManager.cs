@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HelperLibrary.Database;
+using HelperLibrary.PermissionManagement;
 
 namespace HelperLibrary.ForumSystem
 {
@@ -98,6 +99,12 @@ namespace HelperLibrary.ForumSystem
             DbManager.ExecutePreparedInsertUpdateDelete();
         }
 
+        public static void ChangeTopicCategory(int topicId, int newCategoryId)
+        {
+            string query = $"UPDATE topics SET category_id = {newCategoryId} WHERE topic_id = {topicId}";
+            DbManager.InsertUpdateDelete(query);
+        }
+
         public static void DeleteTopic(Topic topic)
         {
             DeleteTopic(topic.Id);
@@ -106,7 +113,9 @@ namespace HelperLibrary.ForumSystem
         public static void DeleteTopic(int topicId)
         {
             PostManager.DeletePosts(topicId);
-            throw new NotImplementedException();
+
+            string query = $"DELETE FROM topics WHERE topic_id = {topicId}";
+            DbManager.InsertUpdateDelete(query);
         }
 
         public static void DeleteTopics(Category category)
@@ -115,38 +124,102 @@ namespace HelperLibrary.ForumSystem
         }
 
         public static void DeleteTopics(int categoryId)
-        {
-            throw new NotImplementedException();
+        {            
+            foreach (var topic in GetTopicsByCategory(categoryId))
+            {
+                DeleteTopic(topic);
+            }
         }
 
         public static List<LastTopic> GetLatestTopics(int max)
-        {
-            throw new NotImplementedException();
+        {            
+            if (max <= 0)
+                throw new ArgumentOutOfRangeException(nameof(max));
+
+            string query = "SELECT A.topic_id, AllowedCategoryId.category_id, AllowedCategoryId.parent_category_id, AllowedCategoryId.category_name, A.title, A.post_id,  A.user_id, A.create_time, A.anzahl AS post_count " +
+                           "FROM( " +
+                              "SELECT TopicIdNameAnz.title, TopicIdNameAnz.anzahl, TopicIdLastDatePosterId.create_time, TopicIdLastDatePosterId.user_id, TopicIdNameAnz.topic_id, TopicIdLastDatePosterId.post_id " +
+                                  "FROM( " +
+                                  "SELECT TopicIdLastDate.create_time, posts.user_id, TopicIdLastDate.tId, posts.post_id " +
+                                  "FROM( " +
+                                      "SELECT topic_id AS tId, MAX(create_time) AS create_time " +
+                                      "FROM `posts` " +
+                                      "GROUP BY topic_id) AS TopicIdLastDate " +
+                                  "JOIN `posts` " +
+                                  "ON (TopicIdLastDate.tId = posts.topic_id AND TopicIdLastDate.create_time = posts.create_time)) AS TopicIdLastDatePosterId " +
+                              "JOIN " +
+                              "( " +
+                                  "SELECT TopicIdName.topic_id, TopicIdName.title, COUNT(*) AS anzahl " +
+                                  "FROM( " +
+                                      "SELECT topic_id, title " +
+                                      "FROM `topics` " +
+                                      "GROUP BY topic_id, title) AS TopicIdName " +
+                                  "JOIN `posts`  " +
+                                  "ON (TopicIdName.topic_id = posts.topic_id) " +
+                                  "GROUP BY TopicIdName.topic_id,TopicIdName.title) AS TopicIdNameAnz  " +
+                              "ON (TopicIdNameAnz.topic_id = TopicIdLastDatePosterId.tId)) AS A " +
+                           "INNER JOIN " +
+                           "( " +
+                               "SELECT topics.topic_id, B.category_id, B.parent_category_id, B.category_name " +
+                               "FROM ( " + 
+                                   "SELECT category_id, parent_category_id, name AS category_name  " +
+		                           "FROM `categories`) AS B " +
+	                           "JOIN `topics` ON (topics.category_id = B.category_id)) AS AllowedCategoryId  " +
+                           "ON (A.topic_id = AllowedCategoryId.topic_id) " +
+                           "ORDER BY create_time DESC " +
+                          $"LIMIT 0, {max}";
+            var reader = DbManager.Select(query);
+
+            var latetstTopics = new List<LastTopic>();
+
+            while (reader.Read())
+            {
+                var topicId = reader.GetInt32(0);
+                var categoryId = reader.GetInt32(1);
+                var parentCategoryId = reader.GetInt32(2);
+                var categoryName = reader.GetString(3);
+                var topicTitle = reader.GetString(4);
+                var lastPostId = reader.GetInt32(5);
+                var postUserId = reader.GetInt32(6);
+                var postCreateTime = reader.GetDateTime(7);
+                var postCount = reader.GetInt32(8);
+
+                var category = new Category(categoryId, parentCategoryId, categoryName);                
+
+                latetstTopics.Add(new LastTopic(topicId, category, topicTitle, lastPostId, postUserId, postCreateTime, postCount));
+            }
+
+            reader.Close();
+
+            return latetstTopics;
         }
 
         public static void CloseTopic(int topicId)
         {
-            throw new NotImplementedException();
+            string query = $"UPDATE topics SET closed = 1 WHERE topic_id = {topicId}";
+            DbManager.InsertUpdateDelete(query);
         }
 
         public static void CloseTopic(Topic topic)
         {
-            throw new NotImplementedException();
+            CloseTopic(topic.Id);
         }
 
         public static void ReOpenTopic(int topicId)
         {
-            throw new NotImplementedException();
+            string query = $"UPDATE topics SET closed = 0 WHERE topic_id = {topicId}";
+            DbManager.InsertUpdateDelete(query);
         }
 
         public static void ReOpenTopic(Topic topic)
         {
-            throw new NotImplementedException();
+            ReOpenTopic(topic.Id);
         }
 
         public static void MarkTopicAsSticky(int topicId)
         {
-            throw new NotImplementedException();
+            string query = $"UPDATE topics SET sticky = 1 WHERE topic_id = {topicId}";
+            DbManager.InsertUpdateDelete(query);
         }
 
         public static void MarkTopicAsSticky(Topic topic)
@@ -156,7 +229,8 @@ namespace HelperLibrary.ForumSystem
 
         public static void MarkTopicAsNotSticky(int topicId)
         {
-            throw new NotImplementedException();
+            string query = $"UPDATE topics SET sticky = 0 WHERE topic_id = {topicId}";
+            DbManager.InsertUpdateDelete(query);
         }
 
         public static void MarkTopicAsNotSticky(Topic topic)
