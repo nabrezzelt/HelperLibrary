@@ -80,9 +80,10 @@
     <Compile Include="ForumSystem\LastTopic.cs" />
     <Compile Include="ForumSystem\Post.cs" />
     <Compile Include="ForumSystem\PostManager.cs" />
-    <Compile Include="ForumSystem\PostVoteType.cs" />
+    <Compile Include="ForumSystem\VoteType.cs" />
     <Compile Include="ForumSystem\Topic.cs" />
     <Compile Include="ForumSystem\TopicManager.cs" />
+    <Compile Include="ForumSystem\Votes.cs" />
     <Compile Include="Logging\Log.cs" />
     <Compile Include="Networking\ClientServer\BaseClientData.cs" />
     <Compile Include="Networking\ClientServer\Client.cs" />

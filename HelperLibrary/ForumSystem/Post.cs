@@ -12,7 +12,7 @@ namespace HelperLibrary.ForumSystem
 
         public int UserId { get; set; }
 
-        public (int Likes, int Dislikes) LikesDislikesUserIds => PostManager.GetLikesAndDislikes();
+        public Votes Votes => PostManager.GetVotes(Id);
 
         public DateTime CreateTime { get; set; }
 
@@ -23,6 +23,6 @@ namespace HelperLibrary.ForumSystem
             Content = content;
             UserId = userId;
             CreateTime = createTime;
-        }
+        }        
     }
 }
