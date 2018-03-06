@@ -44,7 +44,7 @@ namespace HelperLibrary.Database
             }
             catch (Exception e)
             {
-                throw new SqlQueryFailException("Query failed!", ReplacePlaceholderInPreparedQuery(), e);
+                throw new SqlQueryFailedException("Query failed!", ReplacePlaceholderInPreparedQuery(), e);
             }
         }
 
@@ -57,7 +57,7 @@ namespace HelperLibrary.Database
             }
             catch (MySqlException e)
             {
-                throw new SqlQueryFailException("SQL-Query failed", ReplacePlaceholderInPreparedQuery(), e);
+                throw new SqlQueryFailedException("SQL-Query failed", ReplacePlaceholderInPreparedQuery(), e);
             }
         }
 

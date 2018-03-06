@@ -26,7 +26,7 @@ namespace HelperLibrary.Networking.ClientServer
 
         public bool IsConnected { get; set; }
 
-        protected IPAddress ServerIP;
+        protected IPAddress ServerIp;
         protected int Port;
         protected TcpClient TcpClient;
         protected Stream ClientStream;
@@ -34,11 +34,11 @@ namespace HelperLibrary.Networking.ClientServer
         /// <summary>
         /// Initialize the connection to the server.
         /// </summary>
-        /// <param name="serverIP">Server IP</param>
+        /// <param name="serverIp">Server IP</param>
         /// <param name="port">Port to connect</param>
-        public void Connect(IPAddress serverIP, int port)
+        public void Connect(IPAddress serverIp, int port)
         {
-            ServerIP = serverIP;
+            ServerIp = serverIp;
             Port = port;
 
             ConnectToServer();
@@ -47,9 +47,9 @@ namespace HelperLibrary.Networking.ClientServer
         }
 
         /// <inheritdoc cref="Connect(IPAddress, int)"/>
-        public void Connect(string serverIP, int port)
+        public void Connect(string serverIp, int port)
         {
-            Connect(IPAddress.Parse(serverIP), port);
+            Connect(IPAddress.Parse(serverIp), port);
         }
 
         protected virtual void ConnectToServer()
@@ -60,9 +60,9 @@ namespace HelperLibrary.Networking.ClientServer
             {
                 try
                 {
-                    Log.Info("Trying to connect to server at " + ServerIP + " on port " + Port + "...");
+                    Log.Info("Trying to connect to server at " + ServerIp + " on port " + Port + "...");
 
-                    TcpClient.Connect(new IPEndPoint(ServerIP, Port));
+                    TcpClient.Connect(new IPEndPoint(ServerIp, Port));
                     ClientStream = TcpClient.GetStream();
 
                     IsConnected = true;

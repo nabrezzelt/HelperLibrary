@@ -81,7 +81,7 @@ namespace HelperLibrary.Database
             catch (MySqlException e)
             {
 
-                throw new SqlQueryFailException("SQL-Query failed!", query, e);
+                throw new SqlQueryFailedException("SQL-Query failed!", query, e);
             }
         }
 
@@ -104,13 +104,13 @@ namespace HelperLibrary.Database
             }
             catch (MySqlException e)
             {
-                throw new SqlQueryFailException("SQL-Query failed!", query, e);
+                throw new SqlQueryFailedException("SQL-Query failed!", query, e);
             }
 
             return reader;
         }
 
-        public int GetLastID()
+        public int GetLastId()
         {
             if (!IsConnected)
             {

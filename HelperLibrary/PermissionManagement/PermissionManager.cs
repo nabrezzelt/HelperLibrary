@@ -68,7 +68,7 @@ namespace HelperLibrary.PermissionManagement
                     $"INSERT INTO user_permission_relation (user_id, permission_id) VALUES ({userId}, {permissionId})";
                 DbManager.InsertUpdateDelete(query);
             }
-            catch (SqlQueryFailException)
+            catch (SqlQueryFailedException)
             {
                 //Seems that the group aleady have this permission
             }
@@ -124,7 +124,7 @@ namespace HelperLibrary.PermissionManagement
                     $"INSERT INTO group_permission_relation(permission_group_id, permission_id) VALUES({groupId}, {permissionId})";
                 DbManager.InsertUpdateDelete(query);
             }
-            catch (SqlQueryFailException)
+            catch (SqlQueryFailedException)
             {
                 //Seems that the group aleady have this permission
             }

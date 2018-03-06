@@ -14,7 +14,7 @@ namespace HelperLibrary.Networking.ClientServer
         public Stream ClientStream { get; }
 
         private readonly Thread _clientThread;                
-        private Server _serverInstance;
+        private readonly Server _serverInstance;
 
         /// <summary>
         /// Creates a new Client, who handles reading and sending of packages.

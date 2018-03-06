@@ -64,7 +64,7 @@
     <Compile Include="Database\Exceptions\CouldNotConnectException.cs" />
     <Compile Include="Database\Exceptions\NotConnectedException.cs" />
     <Compile Include="Database\Exceptions\QueryNotPreparedException.cs" />
-    <Compile Include="Database\Exceptions\SqlQueryFailException.cs" />
+    <Compile Include="Database\Exceptions\SqlQueryFailedException.cs" />
     <Compile Include="Database\Exceptions\InstanceAlreadyExistsException.cs" />
     <Compile Include="Database\Exceptions\InstanceNotFoundException.cs" />
     <Compile Include="Database\Exceptions\PreparedStatementNotFoundException.cs" />
@@ -75,6 +75,15 @@
     <Compile Include="Cryptography\KeySize.cs" />
     <Compile Include="Database\MySqlDatabaseManager.cs" />
     <Compile Include="Cryptography\RSAKeyManagement.cs" />
+    <Compile Include="ForumSystem\Category.cs" />
+    <Compile Include="ForumSystem\CategoryManager.cs" />
+    <Compile Include="ForumSystem\LastTopic.cs" />
+    <Compile Include="ForumSystem\Post.cs" />
+    <Compile Include="ForumSystem\PostManager.cs" />
+    <Compile Include="ForumSystem\Enums\VoteType.cs" />
+    <Compile Include="ForumSystem\Topic.cs" />
+    <Compile Include="ForumSystem\TopicManager.cs" />
+    <Compile Include="ForumSystem\Votes.cs" />
     <Compile Include="Logging\Log.cs" />
     <Compile Include="Networking\ClientServer\BaseClientData.cs" />
     <Compile Include="Networking\ClientServer\Client.cs" />
@@ -104,7 +113,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ForumSystem\database-structure.sql" />
     <Content Include="PermissionManagement\database-structure.sql" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

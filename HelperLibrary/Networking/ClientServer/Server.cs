@@ -73,12 +73,12 @@ namespace HelperLibrary.Networking.ClientServer
         /// <exception cref="InvalidOperationException">Exception is thrown when IP address could not be parsed.</exception>      
         protected Server(string ip, int port)
         {
-            if (!IPAddress.TryParse(ip, out var validIP))
+            if (!IPAddress.TryParse(ip, out var validIp))
             {
                 throw new InvalidOperationException($"IP address ({ip}) must be valid!");
             }
 
-            Ip = validIP;
+            Ip = validIp;
             Port = port;
             Router = new Router(this);
 

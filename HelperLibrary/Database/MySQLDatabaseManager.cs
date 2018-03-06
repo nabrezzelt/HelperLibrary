@@ -157,7 +157,7 @@ namespace HelperLibrary.Database
         /// Executes a Prepared statement.
         /// </summary>
         /// <returns>Result of the Query.</returns>
-        /// <exception cref="SqlQueryFailException" />
+        /// <exception cref="SqlQueryFailedException" />
         /// <exception cref="QueryNotPreparedException" />
         public MySqlDataReader ExecutePreparedSelect()
         {
@@ -172,7 +172,7 @@ namespace HelperLibrary.Database
             }
             catch (Exception e)
             {
-                throw new SqlQueryFailException("Query failed!", ReplacePlaceholderInPreparedQuery(), e);
+                throw new SqlQueryFailedException("Query failed!", ReplacePlaceholderInPreparedQuery(), e);
             }
         }
 
@@ -180,7 +180,7 @@ namespace HelperLibrary.Database
         /// Executes a Prepared statement.
         /// </summary>
         /// <returns>Result of the Query.</returns>
-        /// <exception cref="SqlQueryFailException" />
+        /// <exception cref="SqlQueryFailedException" />
         /// <exception cref="QueryNotPreparedException" />
         public void ExecutePreparedInsertUpdateDelete()
         {
@@ -198,7 +198,7 @@ namespace HelperLibrary.Database
                 }
                 catch (MySqlException e)
                 {
-                    throw new SqlQueryFailException("SQL-Query failed", ReplacePlaceholderInPreparedQuery(), e);
+                    throw new SqlQueryFailedException("SQL-Query failed", ReplacePlaceholderInPreparedQuery(), e);
                 }
             }
             else
@@ -211,7 +211,7 @@ namespace HelperLibrary.Database
         /// Executes a given SQL-Query that return no Rows.
         /// </summary>
         /// <param name="query">Query to execute.</param>
-        /// <exception cref="SqlQueryFailException" />
+        /// <exception cref="SqlQueryFailedException" />
         public void InsertUpdateDelete(string query)
         {
             if (!IsConnected())
@@ -231,7 +231,7 @@ namespace HelperLibrary.Database
             catch (MySqlException e)
             {
 
-                throw new SqlQueryFailException("SQL-Query failed!", query, e);
+                throw new SqlQueryFailedException("SQL-Query failed!", query, e);
             }
         }
 
@@ -258,7 +258,7 @@ namespace HelperLibrary.Database
             }
             catch (MySqlException e)
             {
-                throw new SqlQueryFailException("SQL-Query failed!", query, e);
+                throw new SqlQueryFailedException("SQL-Query failed!", query, e);
             }
 
             return reader;
@@ -268,7 +268,7 @@ namespace HelperLibrary.Database
         /// Gets the last ID of the auto_increment value.
         /// </summary>
         /// <returns>Last ID</returns>
-        public int GetLastID()
+        public int GetLastId()
         {
             if (!IsConnected())
             {

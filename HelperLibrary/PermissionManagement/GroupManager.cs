@@ -60,7 +60,7 @@ namespace HelperLibrary.PermissionManagement
             DbManager.BindValue("@name", groupName);
             DbManager.ExecutePreparedInsertUpdateDelete();
 
-            return DbManager.GetLastID();
+            return DbManager.GetLastId();
         }
 
         public static void RenamePermissionGroup(PermissionGroup group, string newName)
@@ -120,7 +120,7 @@ namespace HelperLibrary.PermissionManagement
                     $"INSERT INTO group_user_relation (permission_group_id, user_id) VALUES ({groupId}, {userId})";
                 DbManager.InsertUpdateDelete(query);
             }
-            catch (SqlQueryFailException)
+            catch (SqlQueryFailedException)
             {
                 //Seems that the user is already member of this group
             }
