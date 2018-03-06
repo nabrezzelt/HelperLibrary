@@ -104,8 +104,7 @@ namespace HelperLibrary.Cryptography.SelfSignedCertificates
 
             uint flags = (exportable ? 1U : 0U) | (uint)keyBitLength << 16;
 
-            IntPtr keyHandle;
-            bool result = Win32Native.CryptGenKey(_handle, (int)KeyType.Signature, flags, out keyHandle);
+            bool result = Win32Native.CryptGenKey(_handle, (int)KeyType.Signature, flags, out var keyHandle);
             if (!result)
                 Win32ErrorHelper.ThrowExceptionIfGetLastErrorIsNotZero();
 

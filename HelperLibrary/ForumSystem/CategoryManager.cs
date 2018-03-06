@@ -1,6 +1,5 @@
-﻿using System;
+﻿using HelperLibrary.Database;
 using System.Collections.Generic;
-using HelperLibrary.Database;
 
 namespace HelperLibrary.ForumSystem
 {
@@ -97,7 +96,7 @@ namespace HelperLibrary.ForumSystem
             DbManager.BindValue("@name", category.Name);
             DbManager.ExecutePreparedInsertUpdateDelete();
 
-            return DbManager.GetLastID();
+            return DbManager.GetLastId();
         }
 
         public static void RenameCategory(int categoryId, string name)

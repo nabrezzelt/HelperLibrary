@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using HelperLibrary.Database.Exceptions;
+using HelperLibrary.ForumSystem.Enums;
 
 namespace HelperLibrary.ForumSystem
 {
@@ -76,7 +77,7 @@ namespace HelperLibrary.ForumSystem
             DbManager.BindValue("@createTime", createTime);
             DbManager.ExecutePreparedInsertUpdateDelete();
 
-            return DbManager.GetLastID();
+            return DbManager.GetLastId();
         }
 
         public static void ChangePostContent(int postId, string content)
@@ -124,11 +125,11 @@ namespace HelperLibrary.ForumSystem
                 DbManager.PrepareQuery(query);
                 DbManager.BindValue("@postId", postId);
                 DbManager.BindValue("@userId", userId);
-                DbManager.BindValue("@type", type.Value);
+                DbManager.BindValue("@type", (int) type);
 
                 DbManager.ExecutePreparedInsertUpdateDelete();
             }
-            catch (SqlQueryFailException)
+            catch (SqlQueryFailedException)
             {
                 Console.WriteLine("User maybe already liked/disliked this post");                
             }            
@@ -161,7 +162,7 @@ namespace HelperLibrary.ForumSystem
             while (reader.Read())
             {
                 var userId = reader.GetInt32(0);
-                var type = reader.GetString(1);
+                var type = (VoteType) reader.GetInt32(1);
 
                 switch (type)
                 {

@@ -1,11 +1,10 @@
-﻿using System;
+﻿using HelperLibrary.Database;
+using System;
 using System.Collections.Generic;
-using HelperLibrary.Database;
-using HelperLibrary.PermissionManagement;
 
 namespace HelperLibrary.ForumSystem
 {
-    public class TopicManager
+    public static class TopicManager
     {
         private static readonly MySqlDatabaseManager DbManager = MySqlDatabaseManager.GetInstance();
 
@@ -87,7 +86,7 @@ namespace HelperLibrary.ForumSystem
             DbManager.BindValue("@create_time", topic.CreateTime);
             DbManager.ExecutePreparedInsertUpdateDelete();
 
-            return DbManager.GetLastID();
+            return DbManager.GetLastId();
         }
 
         public static void ChangeTopicTitle(int topicId, string newTitle)

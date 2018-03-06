@@ -113,20 +113,20 @@ namespace HelperLibrary.Cryptography
             return Encoding.UTF8.GetBytes(text);
         }
 
-        public static string GenerateSecureRandomToken(int bytes = 32, bool includeGUID = true)
+        public static string GenerateSecureRandomToken(int bytes = 32, bool includeGuid = true)
         {
             using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
             {
                 StringBuilder randomToken = new StringBuilder();
                 byte[] tokenData;
 
-                if (includeGUID)
+                if (includeGuid)
                 {
                     tokenData = new byte[16];
                     rng.GetBytes(tokenData);
 
-                    byte[] randomGUID = new Guid(tokenData).ToByteArray();
-                    randomToken.Append(Convert.ToBase64String(randomGUID));
+                    byte[] randomGuid = new Guid(tokenData).ToByteArray();
+                    randomToken.Append(Convert.ToBase64String(randomGuid));
                 }
 
                 tokenData = new byte[bytes];

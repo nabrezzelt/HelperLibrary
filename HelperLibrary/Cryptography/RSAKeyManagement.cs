@@ -4,7 +4,7 @@ using System.Text;
 
 namespace HelperLibrary.Cryptography
 {
-    public class RSAKeyManagement
+    public class RsaKeyManagement
     {
         public readonly int MaxStringLength;
 
@@ -14,7 +14,7 @@ namespace HelperLibrary.Cryptography
 
         public readonly string PrivateKey;
 
-        public RSAKeyManagement(KeySize keySize = KeySize.Size2048)
+        public RsaKeyManagement(KeySize keySize = KeySize.Size2048)
         {
             var keyPair = CreateKeyPair(keySize);
 

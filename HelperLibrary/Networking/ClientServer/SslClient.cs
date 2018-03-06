@@ -32,9 +32,9 @@ namespace HelperLibrary.Networking.ClientServer
             {
                 try
                 {
-                    Log.Info("Trying to connect to server at " + ServerIP + " on port " + Port + "...");
+                    Log.Info("Trying to connect to server at " + ServerIp + " on port " + Port + "...");
 
-                    TcpClient.Connect(new IPEndPoint(ServerIP, Port));
+                    TcpClient.Connect(new IPEndPoint(ServerIp, Port));
                     InitializeSslConnection(_serverName);
                     Log.SslStreamInformation((SslStream) ClientStream);
 
