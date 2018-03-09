@@ -1,4 +1,5 @@
 ﻿using System.Net.Sockets;
+using HelperLibrary.Networking.ClientServer.Packages;
 
 namespace HelperLibrary.Networking.ClientServer
 {
@@ -44,7 +45,7 @@ namespace HelperLibrary.Networking.ClientServer
                     foreach (BaseClientData client in _serverInstance.Clients)
                     {
                         if (client.Authenticated && !IsInArray(client.Uid, excludedClients))
-                            client.SendDataPackageToClient(package);
+                            client.EnqueueDataForWrite(package);
                     }
                     break;
 
@@ -52,7 +53,7 @@ namespace HelperLibrary.Networking.ClientServer
                     foreach (BaseClientData client in _serverInstance.Clients)
                     {
                         if (!client.Authenticated && !IsInArray(client.Uid, excludedClients))
-                            client.SendDataPackageToClient(package);
+                            client.EnqueueDataForWrite(package);
                     }
                     break;
 
@@ -60,12 +61,12 @@ namespace HelperLibrary.Networking.ClientServer
                     foreach (BaseClientData client in _serverInstance.Clients)
                     {
                         if (!IsInArray(client.Uid, excludedClients))
-                            client.SendDataPackageToClient(package);
+                            client.EnqueueDataForWrite(package);
                     }
                     break;
                 default:
                     //Send to package to DestinationUID
-                    _serverInstance.GetClientFromClientList(package.DestinationUid)?.SendDataPackageToClient(package);
+                    _serverInstance.GetClientFromClientList(package.DestinationUid)?.EnqueueDataForWrite(package);
                     break;
             }
         }

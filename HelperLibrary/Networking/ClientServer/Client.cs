@@ -1,9 +1,11 @@
 ﻿using HelperLibrary.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using HelperLibrary.Networking.ClientServer.Packages;
 
 namespace HelperLibrary.Networking.ClientServer
 {
@@ -24,12 +26,26 @@ namespace HelperLibrary.Networking.ClientServer
         /// </summary>
         public event EventHandler<PackageReceivedEventArgs> PackageReceived;
 
+        /// <summary>
+        /// Indicates if the client is connected to the server.
+        /// </summary>
         public bool IsConnected { get; set; }
 
+        /// <summary>
+        /// <see cref="IPAddress"/> which the <see cref="TcpClient"/> is listen on .
+        /// </summary>
         protected IPAddress ServerIp;
+
+        /// <summary>
+        /// Port which the <see cref="TcpClient"/> is listen on .
+        /// </summary>
         protected int Port;
-        protected TcpClient TcpClient;
+
+        protected TcpClient TcpClient;                
         protected Stream ClientStream;
+
+        protected readonly ConcurrentQueue<byte[]> PendingDataToWrite = new ConcurrentQueue<byte[]>();
+        protected bool SendingData;
 
         /// <summary>
         /// Initialize the connection to the server.
@@ -52,6 +68,9 @@ namespace HelperLibrary.Networking.ClientServer
             Connect(IPAddress.Parse(serverIp), port);
         }
 
+        /// <summary>
+        /// Opens the connection of the TcpClient.
+        /// </summary>
         protected virtual void ConnectToServer()
         {
             TcpClient = new TcpClient();
@@ -75,6 +94,9 @@ namespace HelperLibrary.Networking.ClientServer
             }
         }        
 
+        /// <summary>
+        /// Starts the thread to receive and handle incomming data
+        /// </summary>
         private void StartReceivingData()
         {
             Log.Info("Starting incomming data handler...");
@@ -83,6 +105,9 @@ namespace HelperLibrary.Networking.ClientServer
             Log.Info("Incomming data handler started.");
         }
 
+        /// <summary>
+        /// Reads the incomming data from the <see cref="NetworkStream"/>.
+        /// </summary>
         private void HandleIncommingData()
         {            
             try
@@ -137,18 +162,81 @@ namespace HelperLibrary.Networking.ClientServer
         /// Send a package to the server.
         /// </summary>
         /// <param name="package">Package to send</param>
+        [Obsolete("Use EnqueueDataForWrite(BasePackage package) instead!")]
         public void SendPackageToServer(BasePackage package)
         {
-            if(!TcpClient.Connected)
+            EnqueueDataForWrite(package);
+        }
+        /// <summary>
+        /// Enqueue the packet in the message queue to send this to the server.
+        /// </summary>
+        /// <param name="package">Package to send (must inherit <see cref="BasePackage"/>).</param>
+        public void EnqueueDataForWrite(BasePackage package)
+        {
+            if (!TcpClient.Connected)
                 throw new InvalidOperationException("You're not connected!");
 
-            byte[] packageBytes = BasePackage.Serialize(package);
+            var packageBytes = BasePackage.Serialize(package);
 
             var length = packageBytes.Length;
-            var lengthBytes = BitConverter.GetBytes(length);            
+            var lengthBytes = BitConverter.GetBytes(length);
 
-            ClientStream.Write(lengthBytes, 0, 4); //Senden der Länge/Größe des Textes
-            ClientStream.Write(packageBytes, 0, packageBytes.Length); //Senden der eingentlichen Daten/des Textes   
-        }        
+            PendingDataToWrite.Enqueue(lengthBytes);
+            PendingDataToWrite.Enqueue(packageBytes);
+
+            lock (PendingDataToWrite)
+            {
+                if (SendingData)
+                {
+                    return;
+                }
+
+                SendingData = true;
+            }
+
+            WriteData();
+        }
+
+        private void WriteData()
+        {
+            byte[] buffer;
+
+            try
+            {
+                if (PendingDataToWrite.Count > 0 && PendingDataToWrite.TryDequeue(out buffer))
+                {
+                    ClientStream.BeginWrite(buffer, 0, buffer.Length, WriteCallback, ClientStream);
+                }
+                else
+                {
+                    lock (PendingDataToWrite)
+                    {
+                        SendingData = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {                
+                Log.Debug(ex.ToString());
+                lock (PendingDataToWrite)
+                {
+                    SendingData = false;
+                }
+            }
+        }
+
+        private void WriteCallback(IAsyncResult ar)
+        {
+            try
+            {
+                ClientStream.EndWrite(ar);
+            }
+            catch (Exception ex)
+            {             
+                Log.Debug(ex.ToString());
+            }
+
+            WriteData();
+        }
     }
 }

@@ -1,5 +1,5 @@
-﻿using System;
-using HelperLibrary.Networking.ClientServer;
+﻿using HelperLibrary.Networking.ClientServer.Packages;
+using System;
 
 namespace PackageLibrary
 {

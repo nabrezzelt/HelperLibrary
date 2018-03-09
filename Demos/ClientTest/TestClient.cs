@@ -2,6 +2,7 @@
 using HelperLibrary.Networking.ClientServer;
 using System;
 using HelperLibrary.Logging;
+using HelperLibrary.Networking.ClientServer.Packages;
 using PackageLibrary;
 
 namespace ClientDemo

@@ -166,7 +166,7 @@ namespace HelperLibrary.Database
             try
             {
                 MySqlDataReader reader = _prepareSqlCommand.ExecuteReader();
-                SqlQueryExecuted?.Invoke(this, new SqlQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SqlQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
+                SqlQueryExecuted?.Invoke(this, new SqlQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SqlQueryEventArgs.QueryType.PreparedSelect));
 
                 return reader;
             }
