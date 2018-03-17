@@ -159,7 +159,7 @@ namespace HelperLibrary.Networking.ClientServer
                     }
 
                     //Daten sind im Buffer-Array
-                    Router.DistributePackage((BasePackage)BasePackage.Deserialize(buffer), client.TcpClient);
+                    Router.DistributePackage(BasePackage.Deserialize<BasePackage>(buffer), client.TcpClient);
                 }
             }            
             catch (IOException e)
