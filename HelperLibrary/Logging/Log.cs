@@ -9,7 +9,7 @@ namespace HelperLibrary.Logging
     {
         private const ConsoleColor ColorFatal = ConsoleColor.Red;
         private const ConsoleColor ColorError = ConsoleColor.DarkRed;
-        private const ConsoleColor ColorWarn = ConsoleColor.DarkYellow;
+        private const ConsoleColor ColorWarn = ConsoleColor.Yellow;
         private const ConsoleColor ColorDebug = ConsoleColor.DarkCyan;
 
         public static void Debug(string message)
