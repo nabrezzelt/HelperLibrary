@@ -3,6 +3,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace HelperLibrary.Database
@@ -159,7 +160,7 @@ namespace HelperLibrary.Database
         /// <returns>Result of the Query.</returns>
         /// <exception cref="SqlQueryFailedException" />
         /// <exception cref="QueryNotPreparedException" />
-        public MySqlDataReader ExecutePreparedSelect()
+        public MySqlDataReader ExecutePreparedSelect([CallerLineNumber] int callerLineNumber = 0, [CallerMemberName] string callerMethodName = "")
         {
             if (_prepareSqlCommand == null) throw new QueryNotPreparedException();
 
@@ -172,7 +173,7 @@ namespace HelperLibrary.Database
             }
             catch (Exception e)
             {
-                throw new SqlQueryFailedException("Query failed!", ReplacePlaceholderInPreparedQuery(), e);
+                throw new SqlQueryFailedException("Query failed!", ReplacePlaceholderInPreparedQuery(), callerMethodName, callerLineNumber, e);
             }
         }
 
@@ -182,7 +183,7 @@ namespace HelperLibrary.Database
         /// <returns>Result of the Query.</returns>
         /// <exception cref="SqlQueryFailedException" />
         /// <exception cref="QueryNotPreparedException" />
-        public void ExecutePreparedInsertUpdateDelete()
+        public void ExecutePreparedInsertUpdateDelete([CallerLineNumber] int callerLineNumber = 0, [CallerMemberName] string callerMethodName = "")
         {
             if (!IsConnected())
             {
@@ -198,7 +199,7 @@ namespace HelperLibrary.Database
                 }
                 catch (MySqlException e)
                 {
-                    throw new SqlQueryFailedException("SQL-Query failed", ReplacePlaceholderInPreparedQuery(), e);
+                    throw new SqlQueryFailedException("SQL-Query failed", ReplacePlaceholderInPreparedQuery(), callerMethodName, callerLineNumber, e);
                 }
             }
             else
@@ -211,8 +212,10 @@ namespace HelperLibrary.Database
         /// Executes a given SQL-Query that return no Rows.
         /// </summary>
         /// <param name="query">Query to execute.</param>
+        /// <param name="callerLineNumber"></param>
+        /// <param name="callerMethodName"></param>
         /// <exception cref="SqlQueryFailedException" />
-        public void InsertUpdateDelete(string query)
+        public void InsertUpdateDelete(string query, [CallerLineNumber] int callerLineNumber = 0, [CallerMemberName] string callerMethodName = "")
         {
             if (!IsConnected())
             {
@@ -231,7 +234,7 @@ namespace HelperLibrary.Database
             catch (MySqlException e)
             {
 
-                throw new SqlQueryFailedException("SQL-Query failed!", query, e);
+                throw new SqlQueryFailedException("SQL-Query failed!", query, callerMethodName, callerLineNumber, e);
             }
         }
 
@@ -239,7 +242,9 @@ namespace HelperLibrary.Database
         /// Executes a given SQL-Query that return Rows.
         /// </summary>
         /// <param name="query">Query to execute.</param>
-        public MySqlDataReader Select(string query)
+        /// <param name="callerLineNumber"></param>
+        /// <param name="callerMethodName"></param>
+        public MySqlDataReader Select(string query, [CallerLineNumber] int callerLineNumber = 0, [CallerMemberName] string callerMethodName = "")
         {
             if (!IsConnected())
             {
@@ -258,7 +263,7 @@ namespace HelperLibrary.Database
             }
             catch (MySqlException e)
             {
-                throw new SqlQueryFailedException("SQL-Query failed!", query, e);
+                throw new SqlQueryFailedException("SQL-Query failed!", query, callerMethodName, callerLineNumber, e);
             }
 
             return reader;

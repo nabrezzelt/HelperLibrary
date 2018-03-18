@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Dynamic;
 
 namespace HelperLibrary.Database.Exceptions
 {
@@ -8,16 +9,24 @@ namespace HelperLibrary.Database.Exceptions
     {
         public string SqlQuery { get; }
 
+        public string CallerMethodName { get; }
+        
+        public int CallerLineNumber { get; }
+
         public SqlQueryFailedException() { }
 
-        public SqlQueryFailedException(string message, string sqlQuery) : base(message)
+        public SqlQueryFailedException(string message, string sqlQuery, string callerMethodName, int callerLineNumber) : base(message)
         {
             SqlQuery = sqlQuery;
+            CallerMethodName = callerMethodName;
+            CallerLineNumber = callerLineNumber;
         }
 
-        public SqlQueryFailedException(string message, string sqlQuery, Exception inner) : base(message, inner)
+        public SqlQueryFailedException(string message, string sqlQuery, string callerMethodName, int callerLineNumber, Exception inner) : base(message, inner)
         {
             SqlQuery = sqlQuery;
+            CallerMethodName = callerMethodName;
+            CallerLineNumber = callerLineNumber;
         }
     }
 }
