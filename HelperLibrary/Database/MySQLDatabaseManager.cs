@@ -169,6 +169,9 @@ namespace HelperLibrary.Database
                 MySqlDataReader reader = _prepareSqlCommand.ExecuteReader();
                 SqlQueryExecuted?.Invoke(this, new SqlQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SqlQueryEventArgs.QueryType.PreparedSelect));
 
+                _prepareSqlCommand.Parameters.Clear();
+                _bindedParams.Clear();
+
                 return reader;
             }
             catch (Exception e)
@@ -196,6 +199,9 @@ namespace HelperLibrary.Database
                 {
                     _prepareSqlCommand.ExecuteNonQuery();
                     SqlQueryExecuted?.Invoke(this, new SqlQueryEventArgs(ReplacePlaceholderInPreparedQuery(), SqlQueryEventArgs.QueryType.PreparedInsertUpdateDelete));
+
+                    _prepareSqlCommand.Parameters.Clear();
+                    _bindedParams.Clear();
                 }
                 catch (MySqlException e)
                 {
