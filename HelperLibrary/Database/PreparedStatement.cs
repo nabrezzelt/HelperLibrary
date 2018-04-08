@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using HelperLibrary.Database.Exceptions;
 using MySql.Data.MySqlClient;
 
@@ -33,7 +34,7 @@ namespace HelperLibrary.Database
             }
         }
 
-        public MySqlDataReader ExecuteSelect()
+        public MySqlDataReader ExecuteSelect([CallerLineNumber] int callerLineNumber = 0, [CallerMemberName] string callerMethodName = "")
         {                        
             try
             {
@@ -44,11 +45,11 @@ namespace HelperLibrary.Database
             }
             catch (Exception e)
             {
-                throw new SqlQueryFailedException("Query failed!", ReplacePlaceholderInPreparedQuery(), e);
+                throw new SqlQueryFailedException("Query failed!", ReplacePlaceholderInPreparedQuery(), callerMethodName, callerLineNumber, e);
             }
         }
 
-        public void ExecuteInsertUpdateDelete()
+        public void ExecuteInsertUpdateDelete([CallerLineNumber] int callerLineNumber = 0, [CallerMemberName] string callerMethodName = "")
         {            
             try
             {
@@ -57,7 +58,7 @@ namespace HelperLibrary.Database
             }
             catch (MySqlException e)
             {
-                throw new SqlQueryFailedException("SQL-Query failed", ReplacePlaceholderInPreparedQuery(), e);
+                throw new SqlQueryFailedException("SQL-Query failed", ReplacePlaceholderInPreparedQuery(), callerMethodName, callerLineNumber, e);
             }
         }
 
