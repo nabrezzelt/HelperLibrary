@@ -15,14 +15,16 @@ namespace HelperLibrary.Database.Exceptions
 
         public SqlQueryFailedException() { }
 
-        public SqlQueryFailedException(string message, string sqlQuery, string callerMethodName, int callerLineNumber) : base(message)
+        public SqlQueryFailedException(string message, string sqlQuery, [CallerLineNumber] int callerLineNumber = 0,
+            [CallerMemberName] string callerMethodName = null) : base(message)
         {
             SqlQuery = sqlQuery;
             CallerMethodName = callerMethodName;
             CallerLineNumber = callerLineNumber;
         }
 
-        public SqlQueryFailedException(string message, string sqlQuery, string callerMethodName, int callerLineNumber, Exception inner) : base(message, inner)
+        public SqlQueryFailedException(string message, string sqlQuery, Exception inner,
+            [CallerLineNumber] int callerLineNumber = 0, [CallerMemberName] string callerMethodName = null) : base(message, inner)
         {
             SqlQuery = sqlQuery;
             CallerMethodName = callerMethodName;
