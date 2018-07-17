@@ -13,7 +13,7 @@ namespace HelperLibrary.Networking.ClientServer
         public const string AllNotAutheticatedWildCard = "all_no_auth";
         public const string AllWildCard = "all";
 
-        private readonly Server _serverInstance;
+        protected readonly Server ServerInstance;
 
         /// <summary>
         /// Initializes a new Router for package handling and distribution.
@@ -21,7 +21,7 @@ namespace HelperLibrary.Networking.ClientServer
         /// <param name="serverInstance">Serverinstance to handle packages where are sent to the server.</param>
         public Router(Server serverInstance)
         {
-            _serverInstance = serverInstance;
+            ServerInstance = serverInstance;
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace HelperLibrary.Networking.ClientServer
         /// <param name="package">Packet to distribute</param>
         /// <param name="senderTcpClient">TcpClient-Object of the sender</param>
         /// <param name="excludedClients">Array of clients, where the packet is not distributed</param>
-        public void DistributePackage(BasePackage package, TcpClient senderTcpClient, string[] excludedClients = null)
+        public virtual void DistributePackage(BasePackage package, TcpClient senderTcpClient, string[] excludedClients = null)
         {
             if (excludedClients == null)
                 excludedClients = new string[] { };
@@ -38,11 +38,11 @@ namespace HelperLibrary.Networking.ClientServer
             switch (package.DestinationUid)
             {
                 case ServerWildcard:
-                    _serverInstance.HandleIncommingData(package, senderTcpClient);
+                    ServerInstance.HandleIncommingData(package, senderTcpClient);
                     break;
 
                 case AllAuthenticatedWildCard:
-                    foreach (BaseClientData client in _serverInstance.Clients)
+                    foreach (BaseClientData client in ServerInstance.Clients)
                     {
                         if (client.Authenticated && !IsInArray(client.Uid, excludedClients))
                             client.EnqueueDataForWrite(package);
@@ -50,7 +50,7 @@ namespace HelperLibrary.Networking.ClientServer
                     break;
 
                 case AllNotAutheticatedWildCard:
-                    foreach (BaseClientData client in _serverInstance.Clients)
+                    foreach (BaseClientData client in ServerInstance.Clients)
                     {
                         if (!client.Authenticated && !IsInArray(client.Uid, excludedClients))
                             client.EnqueueDataForWrite(package);
@@ -58,7 +58,7 @@ namespace HelperLibrary.Networking.ClientServer
                     break;
 
                 case AllWildCard:
-                    foreach (BaseClientData client in _serverInstance.Clients)
+                    foreach (BaseClientData client in ServerInstance.Clients)
                     {
                         if (!IsInArray(client.Uid, excludedClients))
                             client.EnqueueDataForWrite(package);
@@ -66,7 +66,7 @@ namespace HelperLibrary.Networking.ClientServer
                     break;
                 default:
                     //Send to package to DestinationUID
-                    _serverInstance.GetClientFromClientList(package.DestinationUid)?.EnqueueDataForWrite(package);
+                    ServerInstance.GetClientFromClientList(package.DestinationUid)?.EnqueueDataForWrite(package);
                     break;
             }
         }
@@ -76,7 +76,7 @@ namespace HelperLibrary.Networking.ClientServer
         /// Distributes a Package to a Wildcard or a specific UID.
         /// </summary>
         /// <param name="package">Package to distribute</param>
-        public void DistributePackage(BasePackage package)
+        protected void DistributePackage(BasePackage package)
         {
             DistributePackage(package, null);
         }
@@ -86,13 +86,13 @@ namespace HelperLibrary.Networking.ClientServer
         /// </summary>
         /// <param name="package">Package to distribute</param>
         /// <param name="excludedClients">Array of clients, where the package is not distributed</param>
-        public void DistributePackage(BasePackage package, string[] excludedClients)
+        protected void DistributePackage(BasePackage package, string[] excludedClients)
         {
             DistributePackage(package, null, excludedClients);
         }
-        
-        private static bool IsInArray(string uid, string[] uids)
-        {            
+
+        protected static bool IsInArray(string uid, string[] uids)
+        {
             foreach (string clientUid in uids)
             {
                 if (uid == clientUid)
@@ -102,6 +102,6 @@ namespace HelperLibrary.Networking.ClientServer
             }
 
             return false;
-        }        
+        }
     }
 }
